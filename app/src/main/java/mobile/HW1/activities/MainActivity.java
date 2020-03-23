@@ -7,6 +7,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,9 +32,10 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView textView;
-    Button button;
 
+    private TextView textView;
+    private Button button;
+    private ProgressBar progressBar;
     private RecyclerView recyclerView;
 
     private static String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiYWhyZWNjZXNlIiwiYSI6ImNrN28yZjE1ZzA0bnIzZG0zb2kxNzlrcHkifQ.J5-vlsAJMMenyqXyRoq32A";
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.input_string);
         button = findViewById(R.id.search_button);
         recyclerView = findViewById(R.id.my_recycler_view);
-
+        progressBar = findViewById(R.id.progressBar);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -89,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
             Log.v("handlingMessage", "mhandler");
             super.handleMessage(msg);
             if (msg.what == START_SEARCHING) {
+
+                progressBar.setVisibility(View.VISIBLE);
+
                 // start Searching
                 gecode(msg.obj.toString());
             } else {
@@ -96,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
                     mAdapter.reset();
                 }
                 results.addAll((ArrayList<CarmenFeature>) msg.obj);
+
+                progressBar.setVisibility(View.GONE);
+
                 Log.v(TAG, "workDone");
             }
         }
@@ -176,3 +184,68 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
+
+/*
+  @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void getSavedData() {
+
+        FileInputStream fis = null;
+
+        try {
+            fis = this.openFileInput(filename);
+            Log.v("save", "file exists");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.v("save", "file doesn't exist");
+        }
+
+        InputStreamReader inputStreamReader =
+                null;
+        if (fis != null) {
+            inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            Log.v("save", " open stream done ");
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (inputStreamReader != null) {
+            Log.v("save", " getting data ");
+            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                String line = reader.readLine();
+                while (line != null) {
+                    stringBuilder.append(line).append('\n');
+                    line = reader.readLine();
+                }
+            } catch (IOException e) {
+                // Error occurred when opening raw file for reading.
+                Log.v("save", "can not read Data");
+            }
+
+            String contents = stringBuilder.toString();
+            results = new ArrayList<String>(Arrays.asList(contents.split("#")));
+            Log.v("Data", contents);
+
+        }
+
+
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+            for (int i = 0; i < results.size(); i++) {
+                fos.write(results.get(i).getBytes());
+                fos.write("#".getBytes());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+ */

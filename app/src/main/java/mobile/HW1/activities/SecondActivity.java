@@ -1,6 +1,5 @@
 package mobile.HW1.activities;
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.StrictMode;
