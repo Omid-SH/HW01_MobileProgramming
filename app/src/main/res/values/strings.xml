@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HW1</string>
+    <string name="london">London</string>
+    <string name="newYork">NewYork</string>
+    <string name="tokyo">Tokyo</string>
+    <string name="losAngles">Los Angles</string>
+    <string name="paris">Paris</string>
+    <string name="weather_clear_night">&#xf02e;</string>
+    <string name="search">Search</string>
+    <string name="text_view_hint">write Your place</string>
+</resources>
