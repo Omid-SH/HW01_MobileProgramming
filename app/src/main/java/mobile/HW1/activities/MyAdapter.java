@@ -1,17 +1,23 @@
 package mobile.HW1.activities;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 
 import java.util.ArrayList;
 
 import mobile.HW1.R;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private ArrayList<String> mDataSet;
+
+    private final View.OnClickListener mOnClickListener;
+    private ArrayList<CarmenFeature> mDataSet;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -27,7 +33,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(ArrayList<String> myDataset) {
+    public MyAdapter(ArrayList<CarmenFeature> myDataset, View.OnClickListener mOnClickListener) {
+        this.mOnClickListener = mOnClickListener;
         mDataSet = myDataset;
     }
 
@@ -38,6 +45,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         // create a new view
         TextView v = (TextView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.every_item, parent, false);
+        v.setOnClickListener(mOnClickListener);
         MyViewHolder vh = new MyViewHolder(v);
         return vh;
     }
@@ -47,7 +55,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.textView.setText(mDataSet.get(position));
+        holder.textView.setText(mDataSet.get(position).placeName());
 
     }
 
@@ -68,3 +76,5 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
 }
+
+
