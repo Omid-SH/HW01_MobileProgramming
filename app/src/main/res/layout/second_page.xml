@@ -9,6 +9,18 @@
 
     android:layout_centerVertical="true">
 
+    <ProgressBar
+
+        android:id="@+id/secondProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/cityField"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/cityField"
         android:layout_width="wrap_content"
@@ -16,7 +28,7 @@
         app:layout_constraintBottom_toTopOf="@id/detailsField"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@id/secondProgressBar">
 
     </TextView>
 

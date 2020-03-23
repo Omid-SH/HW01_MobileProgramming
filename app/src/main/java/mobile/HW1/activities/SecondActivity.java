@@ -2,10 +2,15 @@ package mobile.HW1.activities;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -17,6 +22,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -25,15 +31,25 @@ import mobile.HW1.R;
 
 public class SecondActivity extends AppCompatActivity {
 
+
     static String TAG = "TAG";
+
+    private static final int START_GETTING_JSON = 0;
+    private static final int RENDER_WEATHER = 1;
 
     TextView cityField;
     TextView updatedField;
     TextView detailsField;
     TextView currentTemperatureField;
     TextView weatherIcon;
+    Thread jsonGetterThread;
+    ProgressBar progressBar;
+
+    JSONObject json;
 
     private static final String DARK_SKY = "https://api.forecast.io/forecast/a6b8c7b90a261e493e22279291026462/%s";
+
+    private static Handler mHandlerThread;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +62,9 @@ public class SecondActivity extends AppCompatActivity {
         detailsField = findViewById(R.id.detailsField);
         currentTemperatureField = findViewById(R.id.temperature);
         weatherIcon = findViewById(R.id.weatherIcon);
+        progressBar = findViewById(R.id.secondProgressBar);
+        mHandlerThread = new MapBoxSearcherHandler();
+
 
         // getting pressed city ...
         CarmenFeature cityName = DataHolder.getInstance().getData();
@@ -62,14 +81,35 @@ public class SecondActivity extends AppCompatActivity {
                 .concat(",")
                 .concat(String.valueOf(cityName.center().longitude()));
 
-        // running networking in main thread requesting
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
-        final JSONObject json = getJSON(coordinates);
-        renderWeather(json);
+        jsonGetterThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                json = getJSON(coordinates);
+                mHandlerThread.sendEmptyMessage(RENDER_WEATHER);
+            }
+        });
+
+        mHandlerThread.sendEmptyMessage(START_GETTING_JSON);
 
     }
+
+    class MapBoxSearcherHandler extends Handler {
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == START_GETTING_JSON) {
+                jsonGetterThread.start();
+            } else if (msg.what == RENDER_WEATHER) {
+                progressBar.setVisibility(View.GONE);
+                renderWeather(json);
+            }
+
+        }
+
+    }
+
 
     public static JSONObject getJSON(String coordintate) {
 
@@ -121,18 +161,6 @@ public class SecondActivity extends AppCompatActivity {
 
                 detailsField.setText(detailsField.getText() + days[(today + i) % 7] + ": " + temperatureMin + " - " + temperatureMax + " " + w_summary + "\n");
             }
-
-
-            if (json.getString("timezone").contains("York"))
-                cityField.setText("New York");
-            if (json.getString("timezone").contains("London"))
-                cityField.setText("London");
-            if (json.getString("timezone").contains("Los"))
-                cityField.setText("Los Angles");
-            if (json.getString("timezone").contains("Paris"))
-                cityField.setText("Paris");
-            if (json.getString("timezone").contains("Tokyo"))
-                cityField.setText("Tokyo");
 
 
             currentTemperatureField.setText(json.getJSONObject("currently").getString("temperature") + " \u00b0 F");
