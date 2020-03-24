@@ -1,9 +1,12 @@
 package mobile.HW1.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,6 +15,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -19,10 +23,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dd.processbutton.iml.ActionProcessButton;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
@@ -39,6 +46,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    private FusedLocationProviderClient fusedLocationClient;
 
     // TAG for debugging.
     private static String TAG = "TAG";
@@ -66,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!isConnected()) {
+        // location part
+        if (isDisConnected()) {
             noInternetMode();
             return;
         }
@@ -82,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.input_string);
         button = findViewById(R.id.search_button);
-        button.setMode(ActionProcessButton.Mode.PROGRESS);
+        Button locationButton = findViewById(R.id.location_button);
         recyclerView = findViewById(R.id.my_recycler_view);
         progressBar = findViewById(R.id.progressBar);
 
@@ -106,13 +115,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // setting button listener.
+        button.setMode(ActionProcessButton.Mode.PROGRESS);
         button.setOnClickListener(v -> {
+
+            if (isDisConnected()) {
+                Toasty.error(v.getContext(), "No internet Connection", Toast.LENGTH_SHORT, true).show();
+                return;
+            }
 
             if (!String.valueOf(editText.getText()).equals("")) {
                 button.setMode(ActionProcessButton.Mode.ENDLESS);
                 // set progress > 0 to start progress indicator animation
                 button.setProgress(1);
             }
+
             InputMethodManager inputManager = (InputMethodManager)
                     getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -138,6 +154,14 @@ public class MainActivity extends AppCompatActivity {
             message.what = START_SEARCHING;
             message.obj = location;
             mHandlerThread.sendMessage(message);
+
+        });
+
+        locationButton.setOnClickListener(v -> {
+
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            fetchLastLocation();
+
         });
 
         // use this setting to improve performance if you know that changes
@@ -158,19 +182,18 @@ public class MainActivity extends AppCompatActivity {
         dataHolder.setData(null);
         Intent i = new Intent(this, mobile.HW1.activities.SecondActivity.class);
         startActivity(i);
-        Log.v(TAG, "activity one :( ");
     }
 
-    public boolean isConnected() {
+    public boolean isDisConnected() {
 
         // internet connection check
         ConnectivityManager cm =
                 (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        NetworkInfo activeNetwork = cm != null ? cm.getActiveNetworkInfo() : null;
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
-        return isConnected;
+        return !isConnected;
 
     }
 
@@ -282,6 +305,66 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    private void fetchLastLocation() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    Activity#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for Activity#requestPermissions for more details.
+//                    Toast.makeText(MainActivity.this, "Permission not granted, Kindly allow permission", Toast.LENGTH_LONG).show();
+                showPermissionAlert();
+                return;
+            }
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        // Logic to handle location object
+                        Log.e("LAST LOCATION: ", location.toString());
+
+                        dataHolder.setLocation(location);
+                        Intent i = new Intent(getApplicationContext(), mobile.HW1.activities.SecondActivity.class);
+                        startActivity(i);
+
+
+                    }
+                });
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        Log.v(TAG, String.valueOf(requestCode));
+        if (requestCode == 123) {// If request is cancelled, the result arrays are empty.
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                // permission was denied, show alert to explain permission
+                Toasty.warning(getApplicationContext(), "Sorry you didn't allow permissions", Toasty.LENGTH_LONG).show();
+            } else {
+                //permission is granted now start a background service
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    fetchLastLocation();
+                }
+            }
+        }
+    }
+
+    private void showPermissionAlert() {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 123);
+        }
     }
 
 }
