@@ -8,4 +8,5 @@
     <string name="weather_clear_night">&#xf02e;</string>
     <string name="search">Search</string>
     <string name="text_view_hint">write Your place</string>
+    <string name="done">Done</string>
 </resources>

@@ -33,6 +33,7 @@ import java.util.Calendar;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import es.dmoral.toasty.Toasty;
 import mobile.HW1.R;
 
 public class SecondActivity extends AppCompatActivity {
@@ -45,6 +46,7 @@ public class SecondActivity extends AppCompatActivity {
 
     private static final int START_GETTING_JSON = 0;
     private static final int RENDER = 1;
+
 
     TextView cityField;
     TextView updatedField;
@@ -183,6 +185,11 @@ public class SecondActivity extends AppCompatActivity {
 
     private void renderWeather(JSONObject json) {
 
+        if (json == null) {
+            Toasty.warning(getApplicationContext(), "No saved/gotten Data!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         try {
 
             Calendar calendar = Calendar.getInstance();
@@ -232,6 +239,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+
     public JSONObject getSavedData() {
 
         FileInputStream fis = null;
@@ -269,7 +277,6 @@ public class SecondActivity extends AppCompatActivity {
 
         String rawData = stringBuilder.toString();
         if (rawData.equals("")) {
-            Toast.makeText(getApplicationContext(), "No previousData Saved.", Toast.LENGTH_LONG).show();
             return null;
         } else {
             try {
@@ -279,7 +286,7 @@ public class SecondActivity extends AppCompatActivity {
                 return new JSONObject(data[1]);
 
             } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), "JSON Creation Exception.", Toast.LENGTH_LONG).show();
+                Toasty.error(getApplicationContext(), "JSON Creation Exception.", Toast.LENGTH_LONG).show();
                 return null;
             }
         }

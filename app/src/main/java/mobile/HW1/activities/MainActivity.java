@@ -7,12 +7,13 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
@@ -29,6 +31,7 @@ import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import mobile.HW1.R;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,13 +39,15 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+
     // TAG for debugging.
     private static String TAG = "TAG";
 
     // button is local defined.
-    private TextView textView;
+    private EditText editText;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
+    private ActionProcessButton button;
 
     // mHandler and his! whats.
     private static Handler mHandlerThread;
@@ -75,14 +80,39 @@ public class MainActivity extends AppCompatActivity {
 
     public void setUpViewComponents() {
 
-        textView = findViewById(R.id.input_string);
-        Button button = findViewById(R.id.search_button);
+        editText = findViewById(R.id.input_string);
+        button = findViewById(R.id.search_button);
+        button.setMode(ActionProcessButton.Mode.PROGRESS);
         recyclerView = findViewById(R.id.my_recycler_view);
         progressBar = findViewById(R.id.progressBar);
+
+
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                button.setProgress(0);
+                button.setText(R.string.search);
+            }
+        });
 
         // setting button listener.
         button.setOnClickListener(v -> {
 
+            if (!String.valueOf(editText.getText()).equals("")) {
+                button.setMode(ActionProcessButton.Mode.ENDLESS);
+                // set progress > 0 to start progress indicator animation
+                button.setProgress(1);
+            }
             InputMethodManager inputManager = (InputMethodManager)
                     getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -97,10 +127,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-            String location = textView.getText().toString();
+            String location = editText.getText().toString();
 
             if (location.equals("")) {
-                Toast.makeText(v.getContext(), "Please write sth!", Toast.LENGTH_LONG).show();
+                Toasty.error(v.getContext(), "Please write sth!", Toast.LENGTH_SHORT, true).show();
                 return;
             }
 
@@ -124,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void noInternetMode() {
-        Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+        Toasty.warning(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT, true).show();
         dataHolder.setData(null);
         Intent i = new Intent(this, mobile.HW1.activities.SecondActivity.class);
         startActivity(i);
@@ -171,6 +201,8 @@ public class MainActivity extends AppCompatActivity {
 
                 results.addAll((ArrayList<CarmenFeature>) msg.obj);
                 mAdapter.notifyDataSetChanged();
+                button.setProgress(100);
+                button.setText(R.string.done);
                 progressBar.setVisibility(View.GONE);
                 Log.v(TAG, "workDone");
 
@@ -189,7 +221,10 @@ public class MainActivity extends AppCompatActivity {
             dataHolder.setData(item);
             Intent i = new Intent(v.getContext(), mobile.HW1.activities.SecondActivity.class);
             startActivity(i);
-            Toast.makeText(v.getContext(), item.placeName(), Toast.LENGTH_LONG).show();
+
+            String cityName = item.placeName();
+            if (cityName != null)
+                Toasty.success(v.getContext(), cityName, Toast.LENGTH_LONG).show();
 
         }
     }
