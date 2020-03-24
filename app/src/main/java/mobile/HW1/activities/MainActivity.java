@@ -1,6 +1,9 @@
 package mobile.HW1.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,9 +55,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!isConnected()) {
+            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            dataHolder.setData(null);
+            Intent i = new Intent(this, mobile.HW1.activities.SecondActivity.class);
+            startActivity(i);
+            Log.v(TAG, "activity one :( ");
+            return;
+        }
+
         setContentView(R.layout.first_page);
-
-
         textView = findViewById(R.id.input_string);
         button = findViewById(R.id.search_button);
         recyclerView = findViewById(R.id.my_recycler_view);
@@ -79,6 +90,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public boolean isConnected() {
+
+        // internet connection check
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+
+    }
+
     class geocodeSearcherHandler extends Handler {
         private final ArrayList<CarmenFeature> results;
 
@@ -88,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void handleMessage(@NonNull Message msg) {
-            Log.v("handlingMessage", "mhandler");
+            Log.v(TAG, "handling Massage: mHandler");
             super.handleMessage(msg);
             if (msg.what == START_SEARCHING) {
 
@@ -186,66 +210,3 @@ public class MainActivity extends AppCompatActivity {
 }
 
 
-/*
-  @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void getSavedData() {
-
-        FileInputStream fis = null;
-
-        try {
-            fis = this.openFileInput(filename);
-            Log.v("save", "file exists");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Log.v("save", "file doesn't exist");
-        }
-
-        InputStreamReader inputStreamReader =
-                null;
-        if (fis != null) {
-            inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
-            Log.v("save", " open stream done ");
-        }
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (inputStreamReader != null) {
-            Log.v("save", " getting data ");
-            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-                String line = reader.readLine();
-                while (line != null) {
-                    stringBuilder.append(line).append('\n');
-                    line = reader.readLine();
-                }
-            } catch (IOException e) {
-                // Error occurred when opening raw file for reading.
-                Log.v("save", "can not read Data");
-            }
-
-            String contents = stringBuilder.toString();
-            results = new ArrayList<String>(Arrays.asList(contents.split("#")));
-            Log.v("Data", contents);
-
-        }
-
-
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        try (FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
-            for (int i = 0; i < results.size(); i++) {
-                fos.write(results.get(i).getBytes());
-                fos.write("#".getBytes());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
- */
