@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(mAdapter);
 
-
         // handler part
         mHandlerThread = new geocodeSearcherHandler(results);
 
@@ -121,13 +120,13 @@ public class MainActivity extends AppCompatActivity {
                 // start Searching
                 gecode(msg.obj.toString());
             } else {
+
                 if (results.size() != 0) {
                     mAdapter.reset();
                 }
                 results.addAll((ArrayList<CarmenFeature>) msg.obj);
-
+                mAdapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
-
                 Log.v(TAG, "workDone");
             }
         }
