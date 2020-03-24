@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -35,21 +36,25 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    // TAG for debugging.
+    private static String TAG = "TAG";
 
+    // button is local defined.
     private TextView textView;
-    private Button button;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
 
-    private static String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiYWhyZWNjZXNlIiwiYSI6ImNrN28yZjE1ZzA0bnIzZG0zb2kxNzlrcHkifQ.J5-vlsAJMMenyqXyRoq32A";
-    private static String TAG = "TAG";
-    private static final int START_SEARCHING = 1;
+    // mHandler and his! whats.
+    private static Handler mHandlerThread;
     private static final int SEARCH_DONE = 0;
+    private static final int START_SEARCHING = 1;
+
+    // result of search...
     private static ArrayList<CarmenFeature> results = new ArrayList<>();
     private MyAdapter mAdapter = new MyAdapter(results, new MyOnClickListener());
 
-    private static Handler mHandlerThread;
-
+    // singleton object contains the clicked item in recyclerView.
+    // in order to communicate between activities.
     private DataHolder dataHolder = DataHolder.getInstance();
 
     @Override
@@ -57,19 +62,53 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if (!isConnected()) {
-            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-            dataHolder.setData(null);
-            Intent i = new Intent(this, mobile.HW1.activities.SecondActivity.class);
-            startActivity(i);
-            Log.v(TAG, "activity one :( ");
+            noInternetMode();
             return;
         }
 
         setContentView(R.layout.first_page);
+        setUpViewComponents();
+        // handler part
+        mHandlerThread = new geocodeSearcherHandler(results);
+
+    }
+
+    public void setUpViewComponents() {
+
         textView = findViewById(R.id.input_string);
-        button = findViewById(R.id.search_button);
+        Button button = findViewById(R.id.search_button);
         recyclerView = findViewById(R.id.my_recycler_view);
         progressBar = findViewById(R.id.progressBar);
+
+        // setting button listener.
+        button.setOnClickListener(v -> {
+
+            InputMethodManager inputManager = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            if (inputManager != null) {
+
+                try {
+                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
+                } catch (Exception e) {
+                    Log.e(TAG, "Window Token Exception happen.");
+                }
+
+            }
+
+            String location = textView.getText().toString();
+
+            if (location.equals("")) {
+                Toast.makeText(v.getContext(), "Please write sth!", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            Message message = new Message();
+            message.what = START_SEARCHING;
+            message.obj = location;
+            mHandlerThread.sendMessage(message);
+        });
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -79,14 +118,17 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-
-        // specify an adapter (see also next example)
-
+        // specify an adapter
         recyclerView.setAdapter(mAdapter);
 
-        // handler part
-        mHandlerThread = new geocodeSearcherHandler(results);
+    }
 
+    public void noInternetMode() {
+        Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+        dataHolder.setData(null);
+        Intent i = new Intent(this, mobile.HW1.activities.SecondActivity.class);
+        startActivity(i);
+        Log.v(TAG, "activity one :( ");
     }
 
     public boolean isConnected() {
@@ -111,23 +153,27 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void handleMessage(@NonNull Message msg) {
+
             Log.v(TAG, "handling Massage: mHandler");
             super.handleMessage(msg);
+
             if (msg.what == START_SEARCHING) {
-
                 progressBar.setVisibility(View.VISIBLE);
-
                 // start Searching
                 gecode(msg.obj.toString());
+
             } else {
 
                 if (results.size() != 0) {
+                    // resetting recycler view.
                     mAdapter.reset();
                 }
+
                 results.addAll((ArrayList<CarmenFeature>) msg.obj);
                 mAdapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
                 Log.v(TAG, "workDone");
+
             }
         }
 
@@ -137,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
+
             int itemPosition = recyclerView.getChildLayoutPosition(v);
             CarmenFeature item = results.get(itemPosition);
             dataHolder.setData(item);
@@ -147,18 +194,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void SearchClick(View view) {
-
-        String location = textView.getText().toString();
-
-        Message message = new Message();
-        message.what = START_SEARCHING;
-        message.obj = location;
-        mHandlerThread.sendMessage(message);
-
-    }
-
     public static void gecode(String name) {
+
+        String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiYWhyZWNjZXNlIiwiYSI6ImNrN28yZjE1ZzA0bnIzZG0zb2kxNzlrcHkifQ.J5-vlsAJMMenyqXyRoq32A";
 
         ArrayList<CarmenFeature> cityResults = new ArrayList<>();
 
@@ -171,7 +209,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
 
-                List<CarmenFeature> results = response.body().features();
+                List<CarmenFeature> results;
+                if (response.body() != null) {
+                    results = response.body().features();
+
+                } else {
+                    Log.v(TAG, "onResponse: Response Body is empty");
+                    return;
+                }
 
                 if (results.size() > 0) {
 
@@ -190,10 +235,8 @@ public class MainActivity extends AppCompatActivity {
                     mHandlerThread.sendMessage(message);
 
                 } else {
-
                     // No result for your request were found.
                     Log.v(TAG, "onResponse: No result found");
-
                 }
 
             }
