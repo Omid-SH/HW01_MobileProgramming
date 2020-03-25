@@ -16,7 +16,8 @@
         app:layout_constraintBottom_toTopOf="@id/my_recycler_view"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        custom:ignore="ExtraText">
 
         <ProgressBar
 
@@ -44,43 +45,67 @@
 
         </EditText>
 
+        <LinearLayout
 
-        <com.dd.processbutton.iml.ActionProcessButton
-            android:id="@+id/search_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="@string/search"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="2"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/input_string"
-            app:layout_goneMarginEnd="8dp"
-            custom:pb_colorComplete="@color/green_complete"
-            custom:pb_colorError="@color/red_error"
-            custom:pb_colorPressed="@color/blue_pressed"
-            custom:pb_colorProgress="@color/purple_progress"
-            custom:pb_textComplete="Success"
-            custom:pb_textError="Error"
-            custom:pb_textProgress="Loading" />
+            app:layout_constraintTop_toBottomOf="@id/input_string">
 
-        <!--background color which will be displayed when progress is [100]-->
-        custom:pb_colorComplete
-        <!--text which will be displayed when progress is [100]-->
-        custom:pb_textComplete
-        <!--loading color which will be displayed when progress is [1-99]-->
-        custom:pb_colorProgress
-        <!--text which will be displayed when progress is [1-99]-->
-        custom:pb_textProgress
-        <!--text which will be displayed when progress is [-1]-->
-        custom:pb_textError="Error"
-        <!--background color which will be displayed when progress is [-1]-->
-        custom:pb_colorComplete
+
+            <Button
+                android:id="@+id/location_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="2dp"
+                android:layout_weight="0.5"
+                android:text="@string/location" />
+
+            <com.dd.processbutton.iml.ActionProcessButton
+
+                android:id="@+id/search_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="1.5"
+                android:text="@string/search"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/input_string"
+                app:layout_goneMarginEnd="8dp"
+                custom:pb_colorComplete="@color/green_complete"
+                custom:pb_colorError="@color/red_error"
+                custom:pb_colorPressed="@color/blue_pressed"
+                custom:pb_colorProgress="@color/purple_progress"
+                custom:pb_textComplete="Success"
+                custom:pb_textError="Error"
+                custom:pb_textProgress="Loading" />
+
+            <!--background color which will be displayed when progress is [100]-->
+            custom:pb_colorComplete
+            <!--text which will be displayed when progress is [100]-->
+            custom:pb_textComplete
+            <!--loading color which will be displayed when progress is [1-99]-->
+            custom:pb_colorProgress
+            <!--text which will be displayed when progress is [1-99]-->
+            custom:pb_textProgress
+            <!--text which will be displayed when progress is [-1]-->
+            custom:pb_textError="Error"
+            <!--background color which will be displayed when progress is [-1]-->
+            custom:pb_colorComplete
+
+
+        </LinearLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

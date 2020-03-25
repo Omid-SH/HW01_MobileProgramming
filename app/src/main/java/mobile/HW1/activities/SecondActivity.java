@@ -1,6 +1,10 @@
 package mobile.HW1.activities;
 
+import android.app.Activity;
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +33,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -45,8 +52,9 @@ public class SecondActivity extends AppCompatActivity {
     private String fileName = "Weather";
 
     private static final int START_GETTING_JSON = 0;
-    private static final int RENDER = 1;
-
+    private static final int LOCATION_MODE = 1;
+    private static final int RENDER = 2;
+    private static final int CITY_NAME = 3;
 
     TextView cityField;
     TextView updatedField;
@@ -57,20 +65,22 @@ public class SecondActivity extends AppCompatActivity {
     ProgressBar progressBar;
 
     JSONObject json;
-
+    Handler mHandlerThread;
+    Thread nameGetterThreadLocationMode;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.second_page);
 
         setUpViewComponents();
 
-        String coordinates = getCityCoordinates();
+        mHandlerThread = new MapBoxSearcherHandler();
 
-        Handler mHandlerThread = new MapBoxSearcherHandler();
+        String coordinates = getCityCoordinates();
 
         jsonGetterThread = new Thread(() -> {
             json = getJSON(coordinates);
@@ -99,6 +109,7 @@ public class SecondActivity extends AppCompatActivity {
 
     private String getCityCoordinates() {
 
+        // default is CarmenFeature ...
         // getting pressed city and its coordinates ...
         CarmenFeature cityName = DataHolder.getInstance().getData();
         String coordinates;
@@ -113,8 +124,53 @@ public class SecondActivity extends AppCompatActivity {
 
         } else {
 
-            coordinates = null;
+            Location location = DataHolder.getInstance().getLocation();
+            if (location != null) {
 
+                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+                // todo memory Leakage ...
+                nameGetterThreadLocationMode = new Thread(() -> {
+
+                    List<Address> addresses = null;
+                    try {
+                        DecimalFormat df = new DecimalFormat();
+                        df.setMaximumFractionDigits(3);
+
+                        double lat = Double.parseDouble(df.format(location.getLatitude()));
+                        double lon =
+                                Double.parseDouble(df.format(location.getLongitude()));
+                        addresses = geocoder.getFromLocation(lat, lon, 1);
+
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+
+                    } finally {
+
+                        if (addresses == null) {
+                            Toasty.error(getApplicationContext(), "CityName is not available:(", Toasty.LENGTH_LONG).show();
+                        } else {
+
+                            Message message = new Message();
+                            message.what = CITY_NAME;
+                            message.obj = addresses.get(0).getAddressLine(0);
+                            mHandlerThread.sendMessage(message);
+
+                        }
+
+                    }
+                });
+
+                mHandlerThread.sendEmptyMessage(LOCATION_MODE);
+
+                coordinates = String.valueOf(location.getLatitude())
+                        .concat(",")
+                        .concat(String.valueOf(location.getLongitude()));
+            } else {
+
+                coordinates = null;
+            }
         }
 
         return coordinates;
@@ -136,6 +192,14 @@ public class SecondActivity extends AppCompatActivity {
 
                 progressBar.setVisibility(View.GONE);
                 renderWeather(json);
+
+            } else if (msg.what == LOCATION_MODE) {
+
+                nameGetterThreadLocationMode.start();
+
+            } else if (msg.what == CITY_NAME) {
+
+                cityField.setText(msg.obj.toString());
 
             }
 
