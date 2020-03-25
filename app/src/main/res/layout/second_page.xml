@@ -100,7 +100,7 @@
             android:background="@null"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="@dimen/small_medium_padding">
 
             <Button
                 android:id="@+id/day0_name"
@@ -108,20 +108,15 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:background="@null"
-                android:text="SUN"
-                android:textSize="12dp" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="2dp" />
+                android:textSize="@dimen/small_medium_font" />
+
             <ImageView
                 android:id="@+id/day0_icon"
                 android:layout_width="match_parent"
-                android:layout_margin="10dp"
-                android:layout_height="25dp"
+                android:layout_margin="@dimen/medium_large_padding"
+                android:layout_height="@dimen/size2"
                 android:src="@drawable/ic_sunny"/>
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="2dp" />
+
 
             <LinearLayout
                 android:id="@+id/day0_min_max_temperature"
@@ -130,7 +125,7 @@
                 android:background="@null"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:padding="@dimen/super_small_padding">
 
                 <TextView
                     android:id="@+id/day0_min_temperature"
@@ -138,8 +133,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="10F"
-                    android:textSize="10dp"
+                    android:textSize="@dimen/small_font"
                     android:background="@null"/>
 
                 <ImageView
@@ -156,8 +150,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:layout_height="wrap_content"
-                    android:text="20F"
-                    android:textSize="10dp"
+                    android:textSize="@dimen/small_font"
                     android:background="@null"/>
 
             </LinearLayout>
@@ -172,7 +165,7 @@
             android:background="@null"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="@dimen/small_medium_padding">
 
             <Button
                 android:id="@+id/day1_name"
@@ -180,20 +173,14 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:background="@null"
-                android:text="SUN"
-                android:textSize="12dp" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="2dp" />
+                android:textSize="@dimen/small_medium_font" />
+
             <ImageView
                 android:id="@+id/day1_icon"
                 android:layout_width="match_parent"
-                android:layout_margin="10dp"
-                android:layout_height="25dp"
+                android:layout_margin="@dimen/medium_large_padding"
+                android:layout_height="@dimen/size2"
                 android:src="@drawable/ic_sunny"/>
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="2dp" />
 
             <LinearLayout
                 android:id="@+id/day1_min_max_temperature"
@@ -202,7 +189,7 @@
                 android:background="@null"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:padding="@dimen/small_padding">
 
                 <TextView
                     android:id="@+id/day1_min_temperature"
@@ -211,8 +198,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:background="@null"
-                    android:text="10F"
-                    android:textSize="10dp" />
+                    android:textSize="@dimen/small_font" />
 
                 <ImageView
                     android:id="@+id/day1_min_max_temperature_icon"
@@ -229,8 +215,7 @@
                     android:gravity="center"
                     android:layout_height="wrap_content"
                     android:background="@null"
-                    android:text="20F"
-                    android:textSize="10dp" />
+                    android:textSize="@dimen/small_font" />
 
             </LinearLayout>
 
@@ -244,7 +229,7 @@
             android:background="@null"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="@dimen/small_medium_padding">
 
             <Button
                 android:id="@+id/day2_name"
@@ -252,20 +237,14 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:background="@null"
-                android:text="SUN"
-                android:textSize="12dp" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="2dp" />
+                android:textSize="@dimen/small_medium_font" />
+
             <ImageView
                 android:id="@+id/day2_icon"
                 android:layout_width="match_parent"
-                android:layout_margin="10dp"
-                android:layout_height="25dp"
+                android:layout_margin="@dimen/medium_large_padding"
+                android:layout_height="@dimen/size2"
                 android:src="@drawable/ic_sunny"/>
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="2dp" />
 
             <LinearLayout
                 android:id="@+id/day2_min_max_temperature"
@@ -274,7 +253,7 @@
                 android:background="@null"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:padding="@dimen/small_padding">
 
                 <TextView
                     android:id="@+id/day2_min_temperature"
@@ -283,8 +262,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:background="@null"
-                    android:text="10F"
-                    android:textSize="10dp" />
+                    android:textSize="@dimen/small_font" />
 
                 <ImageView
                     android:id="@+id/day2_min_max_temperature_icon"
@@ -301,8 +279,7 @@
                     android:gravity="center"
                     android:layout_height="wrap_content"
                     android:background="@null"
-                    android:text="20F"
-                    android:textSize="10dp" />
+                    android:textSize="@dimen/small_font" />
 
             </LinearLayout>
 
@@ -316,28 +293,22 @@
             android:background="@null"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="@dimen/small_medium_padding">
 
             <Button
                 android:id="@+id/day3_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="SUN"
-                android:textSize="12dp"
+                android:textSize="@dimen/small_medium_font"
                 android:background="@null"/>
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="2dp" />
+
             <ImageView
                 android:id="@+id/day3_icon"
                 android:layout_width="match_parent"
-                android:layout_margin="10dp"
-                android:layout_height="25dp"
+                android:layout_margin="@dimen/medium_large_padding"
+                android:layout_height="@dimen/size2"
                 android:src="@drawable/ic_sunny"/>
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="2dp" />
 
             <LinearLayout
                 android:id="@+id/day3_min_max_temperature"
@@ -346,7 +317,7 @@
                 android:background="@null"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:padding="@dimen/small_padding">
 
                 <TextView
                     android:id="@+id/day3_min_temperature"
@@ -355,8 +326,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:background="@null"
-                    android:text="10F"
-                    android:textSize="10dp" />
+                    android:textSize="@dimen/small_font" />
 
                 <ImageView
                     android:id="@+id/day3_min_max_temperature_icon"
@@ -373,8 +343,7 @@
                     android:gravity="center"
                     android:layout_height="wrap_content"
                     android:background="@null"
-                    android:text="20F"
-                    android:textSize="10dp" />
+                    android:textSize="@dimen/small_font" />
 
             </LinearLayout>
 
