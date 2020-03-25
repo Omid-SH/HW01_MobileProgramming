@@ -3,4 +3,12 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="airForceBlue">#00308F</color>
+    <color name="babyBlueEyes">#99BBFF</color>
+    <color name="rybBlue">#004DE6</color>
+    <color name="darkPowderBlue">#002B80</color>
+    <color name="celeste">#B3FFF2</color>
+    <color name="brilliantLavender">#FFCCFF</color>
+    <color name="frenchBlue">#0077B3</color>
+
 </resources>

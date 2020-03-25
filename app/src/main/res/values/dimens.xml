@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name = "large_font">25dp</dimen>
+    <dimen name = "super_small_font">6sp</dimen>
+    <dimen name = "small_font">10sp</dimen>
+    <dimen name = "small_medium_font">14sp</dimen>
+    <dimen name = "medium_large_font">18sp</dimen>
+    <dimen name = "large_font">20sp</dimen>
+    <dimen name = "Xlarge_font">25sp</dimen>
+    <dimen name = "XXlarge_font">30sp</dimen>
+    <dimen name = "XXXlarge_font">35sp</dimen>
+    <dimen name = "XXXXlarge_font">45sp</dimen>
 
+    <dimen name = "super_small_padding">1.5dp</dimen>
+    <dimen name = "small_padding">3dp</dimen>
+    <dimen name = "small_medium_padding">5dp</dimen>
+    <dimen name = "medium_large_padding">7dp</dimen>
+    <dimen name = "large_padding">10dp</dimen>
+
+    <dimen name = "size1">15dp</dimen>
+    <dimen name = "size2">20dp</dimen>
+    <dimen name = "size3">25dp</dimen>
+    <dimen name = "size4">30dp</dimen>
+    <dimen name = "size5">35dp</dimen>
+    <dimen name = "size6">40dp</dimen>
 
 </resources>

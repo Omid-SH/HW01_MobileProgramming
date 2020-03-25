@@ -1,6 +1,8 @@
 package mobile.HW1.activities;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -11,6 +13,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 
@@ -55,11 +61,26 @@ public class SecondActivity extends AppCompatActivity {
     private static final int LOCATION_MODE = 1;
     private static final int RENDER = 2;
     private static final int CITY_NAME = 3;
+    private static final int NUMBER_OF_FUTURE_DAYS = 4;
 
-    TextView cityField;
-    TextView updatedField;
-    TextView detailsField;
-    TextView currentTemperatureField;
+    private int clickedDay = 0;
+    TextView cityName;
+    Button option;
+
+    TextView currentDayName;
+    TextView currentTemperature;
+    TextView currentSummary;
+
+    Button[] dayName = new Button[NUMBER_OF_FUTURE_DAYS];
+    TextView[] dayMinTemperature = new TextView[NUMBER_OF_FUTURE_DAYS];
+    TextView[] dayMaxTemperature = new TextView[NUMBER_OF_FUTURE_DAYS];
+    ImageView[] dayIcon = new ImageView[NUMBER_OF_FUTURE_DAYS];
+
+    TextView clickedDayHumidity, clickedDayPrecipitation, clickedDayWind;
+
+    ConstraintLayout mainBackground;
+    LinearLayout days, moreDetail;
+
     // TextView weatherIcon;
     Thread jsonGetterThread;
     ProgressBar progressBar;
@@ -88,22 +109,86 @@ public class SecondActivity extends AppCompatActivity {
         });
 
         mHandlerThread.sendEmptyMessage(START_GETTING_JSON);
+
+        dayName[0].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickedDay = 0;
+                renderWeather(json);
+            }
+        });
+
+        dayName[1].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickedDay = 1;
+                renderWeather(json);
+            }
+        });
+
+        dayName[2].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickedDay = 2;
+                renderWeather(json);
+            }
+        });
+
+        dayName[3].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickedDay = 3;
+                renderWeather(json);
+            }
+        });
     }
 
     private void setUpViewComponents() {
 
+
         // extracting components.
-        cityField = findViewById(R.id.cityField);
-        updatedField = findViewById(R.id.update);
-        detailsField = findViewById(R.id.detailsField);
-        currentTemperatureField = findViewById(R.id.temperature);
+        cityName = (TextView) findViewById(R.id.city_name);
+        option = (Button) findViewById(R.id.option);
+
+        currentDayName = (TextView) findViewById(R.id.current_day_name);
+        currentTemperature = (TextView) findViewById(R.id.current_temperature);
+        currentSummary = (TextView) findViewById(R.id.current_summary);
+
+        // set all days elements
+        dayName[0] = (Button) findViewById(R.id.day0_name);
+        dayIcon[0] = (ImageView) findViewById(R.id.day0_icon);
+        dayMaxTemperature[0] = (TextView) findViewById(R.id.day0_max_temperature);
+        dayMinTemperature[0] = (TextView) findViewById(R.id.day0_min_temperature);
+
+        dayName[1] = (Button) findViewById(R.id.day1_name);
+        dayIcon[1] = (ImageView) findViewById(R.id.day1_icon);
+        dayMaxTemperature[1] = (TextView) findViewById(R.id.day1_max_temperature);
+        dayMinTemperature[1] = (TextView) findViewById(R.id.day1_min_temperature);
+
+        dayName[2] = (Button) findViewById(R.id.day2_name);
+        dayIcon[2] = (ImageView) findViewById(R.id.day2_icon);
+        dayMaxTemperature[2] = (TextView) findViewById(R.id.day2_max_temperature);
+        dayMinTemperature[2] = (TextView) findViewById(R.id.day2_min_temperature);
+
+        dayName[3] = (Button) findViewById(R.id.day3_name);
+        dayIcon[3] = (ImageView) findViewById(R.id.day3_icon);
+        dayMaxTemperature[3] = (TextView) findViewById(R.id.day3_max_temperature);
+        dayMinTemperature[3] = (TextView) findViewById(R.id.day3_min_temperature);
+
+        clickedDayWind = (TextView) findViewById(R.id.clicked_day_wind);
+        clickedDayPrecipitation = (TextView) findViewById(R.id.clicked_day_precipitation);
+        clickedDayHumidity = (TextView) findViewById(R.id.clicked_day_humidity);
+
+        mainBackground = (ConstraintLayout) findViewById(R.id.main_background);
+        days = (LinearLayout) findViewById(R.id.days);
+        moreDetail = (LinearLayout) findViewById(R.id.more_detail);
         // weatherIcon = findViewById(R.id.weatherIcon);
         progressBar = findViewById(R.id.secondProgressBar);
 
         // setting weatherFont ...
-        // Typeface weatherFont = ResourcesCompat.getFont(this, R.font.weather);
-        // weatherIcon.setTypeface(weatherFont);
-        // weatherIcon.setText(getString(R.string.weather_clear_night));
+        //Typeface weatherFont = ResourcesCompat.getFont(this, R.font.weather);
+        //weatherIcon.setTypeface(weatherFont);
+        //weatherIcon.setText(getString(R.string.weather_clear_night));
 
     }
 
@@ -116,7 +201,7 @@ public class SecondActivity extends AppCompatActivity {
 
         if (cityName != null) {
 
-            cityField.setText(cityName.placeName());
+            this.cityName.setText(cityName.placeName());
             // loading data ...
             coordinates = String.valueOf(cityName.center().latitude())
                     .concat(",")
@@ -199,7 +284,7 @@ public class SecondActivity extends AppCompatActivity {
 
             } else if (msg.what == CITY_NAME) {
 
-                cityField.setText(msg.obj.toString());
+                cityName.setText(msg.obj.toString());
 
             }
 
@@ -207,6 +292,14 @@ public class SecondActivity extends AppCompatActivity {
 
     }
 
+    private void cityNameAnimation() {
+        @SuppressLint("ResourceType") AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(this,
+                R.anim.city_name_anim);
+        set.setTarget(R.id.city_name);
+        set.start();
+
+
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public JSONObject getJSON(String coordintate) {
@@ -247,6 +340,7 @@ public class SecondActivity extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void renderWeather(JSONObject json) {
 
         if (json == null) {
@@ -256,45 +350,89 @@ public class SecondActivity extends AppCompatActivity {
 
         try {
 
+            //set visibility
+            currentDayName.setVisibility(View.VISIBLE);
+            currentTemperature.setVisibility(View.VISIBLE);
+            currentSummary.setVisibility(View.VISIBLE);
+            days.setVisibility(View.VISIBLE);
+            moreDetail.setVisibility(View.VISIBLE);
+
             Calendar calendar = Calendar.getInstance();
-            int today = calendar.get(Calendar.DAY_OF_WEEK);
+            int today = calendar.get(Calendar.DAY_OF_WEEK) - 1;
 
             String[] days = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+
+            currentDayName.setText(days[today % 7]);
+
+            String temperature = String.valueOf(Math.round(Double.parseDouble(json.getJSONObject("currently")
+                    .getString("temperature")))).concat(" \u00b0 F");
+            currentTemperature.setText(temperature);
+
+            String summary = json.getJSONObject("currently").getString("summary");
+            currentSummary.setText(summary);
+
+            // set main colors and background based on current icon
+
+            String currentIcon = json.getJSONObject("currently").getString("icon");
+            if (currentIcon.equals("snow") || currentIcon.equals("sleet")) {
+                mainBackground.setBackgroundResource(R.drawable.snowy_background);
+            } else if (currentIcon.equals("clear-day") || currentIcon.equals("clear")) {
+                mainBackground.setBackgroundResource(R.drawable.sunny_background);
+            } else if (currentIcon.equals("clear-night")) {
+                mainBackground.setBackgroundResource(R.drawable.clear_night_background);
+            } else if (currentIcon.equals("rain")) {
+                mainBackground.setBackgroundResource(R.drawable.rainy_background);
+            } else {
+                mainBackground.setBackgroundResource(R.drawable.cloudy_background);
+            }
+
             JSONArray data_array = json.getJSONObject("daily").getJSONArray("data");
 
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < NUMBER_OF_FUTURE_DAYS; i++) {
 
                 JSONObject item = data_array.getJSONObject(i);
 
                 String temperatureMax = item.getString("temperatureMax");
                 String temperatureMin = item.getString("temperatureMin");
+                String icon = item.getString("icon");
 
-                String summary = item.getString("summary");
-                temperatureMax = temperatureMax.substring(0, 2);
-                temperatureMin = temperatureMin.substring(0, 2);
+                temperatureMax = String.valueOf(Math.round(Double.parseDouble(temperatureMax)));
+                temperatureMin = String.valueOf(Math.round(Double.parseDouble(temperatureMin)));
 
-                String detailField = String.valueOf(detailsField.getText())
-                        .concat(days[(today + i) % 7])
-                        .concat(": ")
-                        .concat(temperatureMin)
-                        .concat(" - ")
-                        .concat(temperatureMax)
-                        .concat(" ")
-                        .concat(summary)
-                        .concat("\n");
+                dayName[i].setText(days[(today + i) % 7]);
+                dayMaxTemperature[i].setText(temperatureMax);
+                dayMinTemperature[i].setText(temperatureMin);
 
-                detailsField.setText(detailField);
+                //set icon
+                if(icon.equals("snow"))
+                    dayIcon[i].setImageResource(R.drawable.ic_snowy);
+                else if(icon.equals("clear-day") || icon.equals("clear-night") || icon.equals("clear"))
+                    dayIcon[i].setImageResource(R.drawable.ic_sunny);
+                else if(icon.equals("rain"))
+                    dayIcon[i].setImageResource(R.drawable.ic_rainy);
+                else if(icon.equals("sleet"))
+                    dayIcon[i].setImageResource(R.drawable.ic_sleet);
+                else if(icon.equals("wind"))
+                    dayIcon[i].setImageResource(R.drawable.ic_windy);
+                else if(icon.equals("fog"))
+                    dayIcon[i].setImageResource(R.drawable.ic_fog);
+                else
+                    dayIcon[i].setImageResource(R.drawable.ic_cloudy);
+
+                if(i == clickedDay) {
+                    String wind = item.getString("windSpeed");
+                    wind = String.valueOf(Math.round(Double.parseDouble(wind)));
+                    clickedDayWind.setText(wind);
+
+                    String precipitation = item.getString("precipProbability");
+                    clickedDayPrecipitation.setText(precipitation);
+
+                    String humidity = item.getString("humidity");
+                    clickedDayHumidity.setText(humidity);
+                }
 
             }
 
-            String temperature = json.getJSONObject("currently").getString("temperature").concat(" \u00b0 F");
-            currentTemperatureField.setText(temperature);
-
-            updatedField.setText(
-                    // "SUMMARY OF WEEK  : " +
-                    json.getJSONObject("daily").getString("summary")
-                    // +      "\nTIME ZONE  : " + json.getString("timezone")
-            );
 
         } catch (Exception e) {
             Log.e(TAG, "One or more fields not found in the JSON data");
@@ -346,7 +484,7 @@ public class SecondActivity extends AppCompatActivity {
             try {
                 String[] data = rawData.split("#");
 
-                cityField.setText(data[0]);
+                cityName.setText(data[0]);
                 return new JSONObject(data[1]);
 
             } catch (JSONException e) {
@@ -375,7 +513,7 @@ public class SecondActivity extends AppCompatActivity {
         Log.v(TAG, "Saving Data");
         try (FileOutputStream fos = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE)) {
 
-            String storeData = String.valueOf(cityField.getText()).concat("#").concat(json.toString());
+            String storeData = String.valueOf(cityName.getText()).concat("#").concat(json.toString());
             fos.write(storeData.getBytes());
             Log.v(TAG, "Data Saved");
 
