@@ -25,11 +25,11 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
     private JSONArray mDataSet;
 
 
-    public void setmDataSet(JSONArray mDataSet) {
+    public void setDataSet(JSONArray mDataSet) {
         this.mDataSet = mDataSet;
     }
 
-    public JSONArray getmDataSet() {
+    public JSONArray getDataSet() {
         return mDataSet;
     }
 
@@ -149,42 +149,16 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
 
     }
 
-
-    /*// Replace the contents of a view (invoked by the layout manager)
-    @Override
-    public void onBindViewHolder(AddressViewHolder holder, int position) {
-
-        // - get element from your dataSet at this position
-        // - replace the contents of the view with that element
-
-        String detail = mDataSet.get(position).placeName();
-        String title = (detail != null ? detail.split(",") : new String[]{""})[0];
-
-        holder.details.setText(detail);
-        holder.title.setText(title);
-
-        // beautiful UI!
-        if (position == getItemCount() - 1) {
-            holder.line.setVisibility(View.GONE);
-        }
-
-    }*/
-
     public JSONObject getBottomBarData(int itemPosition) {
 
-        String[] results = new String[3];
-
-
         try {
-            JSONObject item = mDataSet.getJSONObject(itemPosition);
-            return item;
+            return mDataSet.getJSONObject(itemPosition);
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
 
     }
-
 
     @Override
     public int getItemCount() {

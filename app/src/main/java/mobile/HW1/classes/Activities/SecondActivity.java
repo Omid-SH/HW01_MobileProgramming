@@ -86,7 +86,6 @@ public class SecondActivity extends AppCompatActivity {
     Handler mHandlerThread;
     Thread nameGetterThreadLocationMode;
 
-    // my new Addition
     RecyclerView dayRecyclerView;
     private DayAdapter mAdapter = new DayAdapter(new DayClickListener());
 
@@ -123,20 +122,20 @@ public class SecondActivity extends AppCompatActivity {
 
 
         // extracting components.
-        cityName = (TextView) findViewById(R.id.city_name);
-        option = (Button) findViewById(R.id.option);
+        cityName = findViewById(R.id.city_name);
+        option = findViewById(R.id.option);
 
-        currentDayName = (TextView) findViewById(R.id.current_day_name);
-        currentTemperature = (TextView) findViewById(R.id.current_temperature);
-        currentSummary = (TextView) findViewById(R.id.current_summary);
+        currentDayName = findViewById(R.id.current_day_name);
+        currentTemperature = findViewById(R.id.current_temperature);
+        currentSummary = findViewById(R.id.current_summary);
 
         // bottom bar ...
-        moreDetail = (LinearLayout) findViewById(R.id.more_detail);
-        clickedDayWind = (TextView) findViewById(R.id.clicked_day_wind);
-        clickedDayPrecipitation = (TextView) findViewById(R.id.clicked_day_precipitation);
-        clickedDayHumidity = (TextView) findViewById(R.id.clicked_day_humidity);
+        moreDetail = findViewById(R.id.more_detail);
+        clickedDayWind = findViewById(R.id.clicked_day_wind);
+        clickedDayPrecipitation = findViewById(R.id.clicked_day_precipitation);
+        clickedDayHumidity = findViewById(R.id.clicked_day_humidity);
 
-        mainBackground = (ConstraintLayout) findViewById(R.id.main_background);
+        mainBackground = findViewById(R.id.main_background);
 
         // weatherIcon = findViewById(R.id.weatherIcon);
         progressBar = findViewById(R.id.secondProgressBar);
@@ -251,8 +250,8 @@ public class SecondActivity extends AppCompatActivity {
 
                 try {
                     Log.v(TAG, "Start Rendering " + json.toString());
-                    mAdapter.setmDataSet(json.getJSONObject("daily").getJSONArray("data"));
-                    Log.v(TAG, String.valueOf(mAdapter.getmDataSet().length()));
+                    mAdapter.setDataSet(json.getJSONObject("daily").getJSONArray("data"));
+                    Log.v(TAG, String.valueOf(mAdapter.getDataSet().length()));
                     mAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
