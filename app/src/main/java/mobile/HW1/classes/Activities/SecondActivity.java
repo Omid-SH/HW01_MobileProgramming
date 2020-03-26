@@ -1,12 +1,15 @@
-package mobile.HW1.activities;
+package mobile.HW1.classes.Activities;
 
 import android.annotation.SuppressLint;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +17,6 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,10 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,9 +51,10 @@ import javax.net.ssl.HttpsURLConnection;
 
 import es.dmoral.toasty.Toasty;
 import mobile.HW1.R;
+import mobile.HW1.classes.Adapters.DayAdapter;
+import mobile.HW1.classes.Utils.DataHolder;
 
 public class SecondActivity extends AppCompatActivity {
-
 
     static String TAG = "TAG";
 
@@ -61,9 +65,7 @@ public class SecondActivity extends AppCompatActivity {
     private static final int LOCATION_MODE = 1;
     private static final int RENDER = 2;
     private static final int CITY_NAME = 3;
-    private static final int NUMBER_OF_FUTURE_DAYS = 4;
 
-    private int clickedDay = 0;
     TextView cityName;
     Button option;
 
@@ -71,15 +73,10 @@ public class SecondActivity extends AppCompatActivity {
     TextView currentTemperature;
     TextView currentSummary;
 
-    Button[] dayName = new Button[NUMBER_OF_FUTURE_DAYS];
-    TextView[] dayMinTemperature = new TextView[NUMBER_OF_FUTURE_DAYS];
-    TextView[] dayMaxTemperature = new TextView[NUMBER_OF_FUTURE_DAYS];
-    ImageView[] dayIcon = new ImageView[NUMBER_OF_FUTURE_DAYS];
-
     TextView clickedDayHumidity, clickedDayPrecipitation, clickedDayWind;
 
     ConstraintLayout mainBackground;
-    LinearLayout days, moreDetail;
+    LinearLayout moreDetail;
 
     // TextView weatherIcon;
     Thread jsonGetterThread;
@@ -89,10 +86,17 @@ public class SecondActivity extends AppCompatActivity {
     Handler mHandlerThread;
     Thread nameGetterThreadLocationMode;
 
+    // my new Addition
+    RecyclerView dayRecyclerView;
+    private DayAdapter mAdapter = new DayAdapter(new DayClickListener());
+
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
+
+        Log.v(TAG, "Start Creation");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.second_page);
@@ -104,43 +108,15 @@ public class SecondActivity extends AppCompatActivity {
         String coordinates = getCityCoordinates();
 
         jsonGetterThread = new Thread(() -> {
+            Log.v(TAG, "inside of getterJsonThread");
             json = getJSON(coordinates);
+            Log.v(TAG, "json Got");
             mHandlerThread.sendEmptyMessage(RENDER);
         });
 
+
         mHandlerThread.sendEmptyMessage(START_GETTING_JSON);
 
-        dayName[0].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickedDay = 0;
-                renderWeather(json);
-            }
-        });
-
-        dayName[1].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickedDay = 1;
-                renderWeather(json);
-            }
-        });
-
-        dayName[2].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickedDay = 2;
-                renderWeather(json);
-            }
-        });
-
-        dayName[3].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickedDay = 3;
-                renderWeather(json);
-            }
-        });
     }
 
     private void setUpViewComponents() {
@@ -154,34 +130,14 @@ public class SecondActivity extends AppCompatActivity {
         currentTemperature = (TextView) findViewById(R.id.current_temperature);
         currentSummary = (TextView) findViewById(R.id.current_summary);
 
-        // set all days elements
-        dayName[0] = (Button) findViewById(R.id.day0_name);
-        dayIcon[0] = (ImageView) findViewById(R.id.day0_icon);
-        dayMaxTemperature[0] = (TextView) findViewById(R.id.day0_max_temperature);
-        dayMinTemperature[0] = (TextView) findViewById(R.id.day0_min_temperature);
-
-        dayName[1] = (Button) findViewById(R.id.day1_name);
-        dayIcon[1] = (ImageView) findViewById(R.id.day1_icon);
-        dayMaxTemperature[1] = (TextView) findViewById(R.id.day1_max_temperature);
-        dayMinTemperature[1] = (TextView) findViewById(R.id.day1_min_temperature);
-
-        dayName[2] = (Button) findViewById(R.id.day2_name);
-        dayIcon[2] = (ImageView) findViewById(R.id.day2_icon);
-        dayMaxTemperature[2] = (TextView) findViewById(R.id.day2_max_temperature);
-        dayMinTemperature[2] = (TextView) findViewById(R.id.day2_min_temperature);
-
-        dayName[3] = (Button) findViewById(R.id.day3_name);
-        dayIcon[3] = (ImageView) findViewById(R.id.day3_icon);
-        dayMaxTemperature[3] = (TextView) findViewById(R.id.day3_max_temperature);
-        dayMinTemperature[3] = (TextView) findViewById(R.id.day3_min_temperature);
-
+        // bottom bar ...
+        moreDetail = (LinearLayout) findViewById(R.id.more_detail);
         clickedDayWind = (TextView) findViewById(R.id.clicked_day_wind);
         clickedDayPrecipitation = (TextView) findViewById(R.id.clicked_day_precipitation);
         clickedDayHumidity = (TextView) findViewById(R.id.clicked_day_humidity);
 
         mainBackground = (ConstraintLayout) findViewById(R.id.main_background);
-        days = (LinearLayout) findViewById(R.id.days);
-        moreDetail = (LinearLayout) findViewById(R.id.more_detail);
+
         // weatherIcon = findViewById(R.id.weatherIcon);
         progressBar = findViewById(R.id.secondProgressBar);
 
@@ -190,16 +146,33 @@ public class SecondActivity extends AppCompatActivity {
         //weatherIcon.setTypeface(weatherFont);
         //weatherIcon.setText(getString(R.string.weather_clear_night));
 
+
+        dayRecyclerView = findViewById(R.id.days);
+
+        dayRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        dayRecyclerView.setLayoutManager(layoutManager);
+
+
+        // specify an adapter
+        dayRecyclerView.setAdapter(mAdapter);
+
+
     }
 
     private String getCityCoordinates() {
 
+        Log.v(TAG, "Start getting coordinates");
         // default is CarmenFeature ...
         // getting pressed city and its coordinates ...
         CarmenFeature cityName = DataHolder.getInstance().getData();
         String coordinates;
 
         if (cityName != null) {
+            // network mode
 
             this.cityName.setText(cityName.placeName());
             // loading data ...
@@ -208,7 +181,7 @@ public class SecondActivity extends AppCompatActivity {
                     .concat(String.valueOf(cityName.center().longitude()));
 
         } else {
-
+            // Location mode
             Location location = DataHolder.getInstance().getLocation();
             if (location != null) {
 
@@ -258,6 +231,7 @@ public class SecondActivity extends AppCompatActivity {
             }
         }
 
+        Log.v(TAG, "coordinates Got" + coordinates);
         return coordinates;
     }
 
@@ -270,13 +244,22 @@ public class SecondActivity extends AppCompatActivity {
             super.handleMessage(msg);
 
             if (msg.what == START_GETTING_JSON) {
-
+                Log.v(TAG, "requesting getting Json");
                 jsonGetterThread.start();
 
             } else if (msg.what == RENDER) {
 
+                try {
+                    Log.v(TAG, "Start Rendering " + json.toString());
+                    mAdapter.setmDataSet(json.getJSONObject("daily").getJSONArray("data"));
+                    Log.v(TAG, String.valueOf(mAdapter.getmDataSet().length()));
+                    mAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 progressBar.setVisibility(View.GONE);
-                renderWeather(json);
+                renderWeather(0);
 
             } else if (msg.what == LOCATION_MODE) {
 
@@ -293,6 +276,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     private void cityNameAnimation() {
+
         @SuppressLint("ResourceType") AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(this,
                 R.anim.city_name_anim);
         set.setTarget(R.id.city_name);
@@ -340,108 +324,8 @@ public class SecondActivity extends AppCompatActivity {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void renderWeather(JSONObject json) {
-
-        if (json == null) {
-            Toasty.warning(getApplicationContext(), "No saved/gotten Data!", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        try {
-
-            //set visibility
-            currentDayName.setVisibility(View.VISIBLE);
-            currentTemperature.setVisibility(View.VISIBLE);
-            currentSummary.setVisibility(View.VISIBLE);
-            days.setVisibility(View.VISIBLE);
-            moreDetail.setVisibility(View.VISIBLE);
-
-            Calendar calendar = Calendar.getInstance();
-            int today = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-
-            String[] days = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-
-            currentDayName.setText(days[today % 7]);
-
-            String temperature = String.valueOf(Math.round(Double.parseDouble(json.getJSONObject("currently")
-                    .getString("temperature")))).concat(" \u00b0 F");
-            currentTemperature.setText(temperature);
-
-            String summary = json.getJSONObject("currently").getString("summary");
-            currentSummary.setText(summary);
-
-            // set main colors and background based on current icon
-
-            String currentIcon = json.getJSONObject("currently").getString("icon");
-            if (currentIcon.equals("snow") || currentIcon.equals("sleet")) {
-                mainBackground.setBackgroundResource(R.drawable.snowy_background);
-            } else if (currentIcon.equals("clear-day") || currentIcon.equals("clear")) {
-                mainBackground.setBackgroundResource(R.drawable.sunny_background);
-            } else if (currentIcon.equals("clear-night")) {
-                mainBackground.setBackgroundResource(R.drawable.clear_night_background);
-            } else if (currentIcon.equals("rain")) {
-                mainBackground.setBackgroundResource(R.drawable.rainy_background);
-            } else {
-                mainBackground.setBackgroundResource(R.drawable.cloudy_background);
-            }
-
-            JSONArray data_array = json.getJSONObject("daily").getJSONArray("data");
-
-            for (int i = 0; i < NUMBER_OF_FUTURE_DAYS; i++) {
-
-                JSONObject item = data_array.getJSONObject(i);
-
-                String temperatureMax = item.getString("temperatureMax");
-                String temperatureMin = item.getString("temperatureMin");
-                String icon = item.getString("icon");
-
-                temperatureMax = String.valueOf(Math.round(Double.parseDouble(temperatureMax)));
-                temperatureMin = String.valueOf(Math.round(Double.parseDouble(temperatureMin)));
-
-                dayName[i].setText(days[(today + i) % 7]);
-                dayMaxTemperature[i].setText(temperatureMax);
-                dayMinTemperature[i].setText(temperatureMin);
-
-                //set icon
-                if(icon.equals("snow"))
-                    dayIcon[i].setImageResource(R.drawable.ic_snowy);
-                else if(icon.equals("clear-day") || icon.equals("clear-night") || icon.equals("clear"))
-                    dayIcon[i].setImageResource(R.drawable.ic_sunny);
-                else if(icon.equals("rain"))
-                    dayIcon[i].setImageResource(R.drawable.ic_rainy);
-                else if(icon.equals("sleet"))
-                    dayIcon[i].setImageResource(R.drawable.ic_sleet);
-                else if(icon.equals("wind"))
-                    dayIcon[i].setImageResource(R.drawable.ic_windy);
-                else if(icon.equals("fog"))
-                    dayIcon[i].setImageResource(R.drawable.ic_fog);
-                else
-                    dayIcon[i].setImageResource(R.drawable.ic_cloudy);
-
-                if(i == clickedDay) {
-                    String wind = item.getString("windSpeed");
-                    wind = String.valueOf(Math.round(Double.parseDouble(wind)));
-                    clickedDayWind.setText(wind);
-
-                    String precipitation = item.getString("precipProbability");
-                    clickedDayPrecipitation.setText(precipitation);
-
-                    String humidity = item.getString("humidity");
-                    clickedDayHumidity.setText(humidity);
-                }
-
-            }
-
-
-        } catch (Exception e) {
-            Log.e(TAG, "One or more fields not found in the JSON data");
-        }
-
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-
     public JSONObject getSavedData() {
 
         FileInputStream fis = null;
@@ -484,7 +368,11 @@ public class SecondActivity extends AppCompatActivity {
             try {
                 String[] data = rawData.split("#");
 
-                cityName.setText(data[0]);
+                Message message = new Message();
+                message.what = CITY_NAME;
+                message.obj = data[0];
+                mHandlerThread.sendMessage(message);
+
                 return new JSONObject(data[1]);
 
             } catch (JSONException e) {
@@ -522,5 +410,169 @@ public class SecondActivity extends AppCompatActivity {
         }
 
     }
+
+    class DayClickListener implements View.OnClickListener {
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+        @Override
+        public void onClick(View v) {
+
+            int itemPosition = dayRecyclerView.getChildLayoutPosition(v);
+            renderWeather(itemPosition);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void renderWeather(int dayOffSet) {
+
+        if (json == null) {
+            Toasty.warning(getApplicationContext(), "No saved/gotten Data!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        try {
+
+            // current box
+            currentDayName.setVisibility(View.VISIBLE);
+            currentTemperature.setVisibility(View.VISIBLE);
+            currentSummary.setVisibility(View.VISIBLE);
+
+            // day box
+            dayRecyclerView.setVisibility(View.VISIBLE);
+            // details box
+            moreDetail.setVisibility(View.VISIBLE);
+
+            Calendar calendar = Calendar.getInstance();
+            int today = calendar.get(Calendar.DAY_OF_WEEK) - 1 + dayOffSet;
+
+            String[] days = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+
+            currentDayName.setText(days[today % 7]);
+
+            if (dayOffSet == 0) {
+
+                String temperature = String.valueOf(Math.round(Double.parseDouble(json.getJSONObject("currently")
+                        .getString("temperature")))).concat(" \u00b0 F");
+
+                currentTemperature.setText(temperature);
+
+                String summary = json.getJSONObject("currently").getString("summary");
+                currentSummary.setText(summary);
+
+                // set main colors and background based on current icon
+
+                String currentIcon = json.getJSONObject("currently").getString("icon");
+                Log.v(TAG, "MainBack" + currentIcon);
+                switch (currentIcon) {
+
+                    // setting background page according to the icon.
+                    case "snow":
+                    case "sleet":
+                        mainBackground.setBackgroundResource(R.drawable.snowy_background);
+                        break;
+
+                    case "clear-day":
+                    case "clear":
+                        mainBackground.setBackgroundResource(R.drawable.sunny_background);
+                        break;
+
+                    case "clear-night":
+                        mainBackground.setBackgroundResource(R.drawable.clear_night_background);
+                        break;
+
+                    case "rain":
+                        mainBackground.setBackgroundResource(R.drawable.rainy_background);
+                        break;
+
+                    default:
+                        mainBackground.setBackgroundResource(R.drawable.cloudy_background);
+                        break;
+                }
+
+            } else {
+
+                JSONObject data = mAdapter.getBottomBarData(dayOffSet);
+
+                String temperature = String.valueOf(
+                        Math.round((Double.parseDouble(data.getString("temperatureHigh"))
+                                + Double.parseDouble(data.getString("temperatureLow"))) / 2)
+                ).concat(" \u00b0 F");
+
+                currentTemperature.setText("Avg: ".concat(temperature));
+
+                String summary = data.getString("summary");
+                currentSummary.setText(summary);
+
+                // set main colors and background based on current icon
+
+                String currentIcon = data.getString("icon");
+
+                Log.v(TAG, "MainBack" + currentIcon);
+                switch (currentIcon) {
+
+                    // setting background page according to the icon.
+                    case "snow":
+                    case "sleet":
+                        mainBackground.setBackgroundResource(R.drawable.snowy_background);
+                        break;
+
+                    case "clear-day":
+                    case "clear":
+                        mainBackground.setBackgroundResource(R.drawable.sunny_background);
+                        break;
+
+                    case "clear-night":
+                        mainBackground.setBackgroundResource(R.drawable.clear_night_background);
+                        break;
+
+                    case "rain":
+                        mainBackground.setBackgroundResource(R.drawable.rainy_background);
+                        break;
+
+                    default:
+                        mainBackground.setBackgroundResource(R.drawable.cloudy_background);
+                        break;
+                }
+
+            }
+
+
+            JSONObject bottomBarData = mAdapter.getBottomBarData(dayOffSet);
+            clickedDayWind.setText(bottomBarData.getString("windSpeed"));
+            clickedDayPrecipitation.setText(bottomBarData.getString("precipProbability"));
+            clickedDayHumidity.setText(bottomBarData.getString("humidity"));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "One or more fields not found in the JSON data");
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (!isDisConnected()) {
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+        }
+
+    }
+
+
+    public boolean isDisConnected() {
+
+        // internet connection check
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm != null ? cm.getActiveNetworkInfo() : null;
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return !isConnected;
+
+    }
+
 
 }

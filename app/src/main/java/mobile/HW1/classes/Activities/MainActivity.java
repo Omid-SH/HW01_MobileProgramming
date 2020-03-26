@@ -1,4 +1,4 @@
-package mobile.HW1.activities;
+package mobile.HW1.classes.Activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -40,6 +40,8 @@ import java.util.List;
 
 import es.dmoral.toasty.Toasty;
 import mobile.HW1.R;
+import mobile.HW1.classes.Adapters.PlaceAdapter;
+import mobile.HW1.classes.Utils.DataHolder;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     // result of search...
     private static ArrayList<CarmenFeature> results = new ArrayList<>();
-    private MyAdapter mAdapter = new MyAdapter(results, new MyOnClickListener());
+    private PlaceAdapter mAdapter = new PlaceAdapter(results, new MyOnClickListener());
 
     // singleton object contains the clicked item in recyclerView.
     // in order to communicate between activities.
@@ -119,7 +121,8 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(v -> {
 
             if (isDisConnected()) {
-                Toasty.error(v.getContext(), "No internet Connection", Toast.LENGTH_SHORT, true).show();
+                Toasty.info(v.getContext(), "Switching to Your Last Search", Toasty.LENGTH_LONG, true).show();
+                noInternetMode();
                 return;
             }
 
@@ -178,9 +181,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void noInternetMode() {
+        dataHolder.invalid();
         Toasty.warning(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT, true).show();
-        dataHolder.setData(null);
-        Intent i = new Intent(this, mobile.HW1.activities.SecondActivity.class);
+        Intent i = new Intent(this, SecondActivity.class);
         startActivity(i);
     }
 
@@ -239,10 +242,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
+            if (isDisConnected()) {
+                Toasty.info(getApplicationContext(), "Switching to Your Last Search", Toasty.LENGTH_LONG, true).show();
+                noInternetMode();
+                return;
+            }
+
             int itemPosition = recyclerView.getChildLayoutPosition(v);
             CarmenFeature item = results.get(itemPosition);
             dataHolder.setData(item);
-            Intent i = new Intent(v.getContext(), mobile.HW1.activities.SecondActivity.class);
+            Intent i = new Intent(v.getContext(), SecondActivity.class);
             startActivity(i);
 
             String cityName = item.placeName();
@@ -332,10 +341,15 @@ public class MainActivity extends AppCompatActivity {
                         // Logic to handle location object
                         Log.e("LAST LOCATION: ", location.toString());
 
-                        dataHolder.setLocation(location);
-                        Intent i = new Intent(getApplicationContext(), mobile.HW1.activities.SecondActivity.class);
-                        startActivity(i);
-
+                        if (!isDisConnected()) {
+                            dataHolder.setLocation(location);
+                            Log.v(TAG, "Activity Lunched");
+                            Intent i = new Intent(getApplicationContext(), SecondActivity.class);
+                            startActivity(i);
+                        } else {
+                            Toasty.info(getApplicationContext(), "Switching to Your Last Search", Toasty.LENGTH_LONG, true).show();
+                            noInternetMode();
+                        }
 
                     }
                 });

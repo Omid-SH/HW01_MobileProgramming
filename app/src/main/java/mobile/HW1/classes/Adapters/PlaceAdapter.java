@@ -1,4 +1,4 @@
-package mobile.HW1.activities;
+package mobile.HW1.classes.Adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 import mobile.HW1.R;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.AddressViewHolder> {
 
     private final View.OnClickListener mOnClickListener;
     private ArrayList<CarmenFeature> mDataSet;
@@ -22,14 +22,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    static class MyViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
+    static class AddressViewHolder extends RecyclerView.ViewHolder {
+        // each data item
         private TextView title;
         private TextView details;
         // divider Line.
         private View line;
 
-        MyViewHolder(@NonNull View itemView) {
+        AddressViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.address_title);
             details = itemView.findViewById(R.id.address_detail);
@@ -38,7 +38,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataSet)
-    MyAdapter(ArrayList<CarmenFeature> myDataset, View.OnClickListener mOnClickListener) {
+    public PlaceAdapter(ArrayList<CarmenFeature> myDataset, View.OnClickListener mOnClickListener) {
         this.mOnClickListener = mOnClickListener;
         mDataSet = myDataset;
     }
@@ -46,20 +46,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
-    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
+    public AddressViewHolder onCreateViewHolder(ViewGroup parent,
+                                                int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.address, parent, false);
 
         v.setOnClickListener(mOnClickListener);
 
-        return new MyViewHolder(v);
+        return new AddressViewHolder(v);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(AddressViewHolder holder, int position) {
 
         // - get element from your dataSet at this position
         // - replace the contents of the view with that element
@@ -83,7 +83,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return mDataSet.size();
     }
 
-    void reset() {
+    public void reset() {
 
         while (mDataSet.size() > 0) {
             mDataSet.remove(0);

@@ -1,4 +1,4 @@
-package mobile.HW1.activities;
+package mobile.HW1.classes.Utils;
 
 import android.location.Location;
 
@@ -28,5 +28,10 @@ public class DataHolder {
 
     public static DataHolder getInstance() {
         return holder;
+    }
+
+    public void invalid() {
+        this.data = null;
+        this.location = null;
     }
 }
