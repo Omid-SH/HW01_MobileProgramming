@@ -17,14 +17,14 @@
 
         <TextView
             android:id="@+id/day_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="@dimen/small_medium_font" />
 
         <ImageView
             android:id="@+id/day_icon"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/size2"
             android:layout_margin="@dimen/medium_large_padding"
             android:src="@drawable/ic_sunny" />

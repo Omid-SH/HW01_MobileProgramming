@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.input_string);
         button = findViewById(R.id.search_button);
-        Button locationButton = findViewById(R.id.location_button);
+        LottieAnimationView locationButton = findViewById(R.id.location_button);
         recyclerView = findViewById(R.id.my_recycler_view);
         progressBar = findViewById(R.id.progressBar);
 
@@ -162,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
         locationButton.setOnClickListener(v -> {
 
+            locationButton.playAnimation();
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             fetchLastLocation();
 

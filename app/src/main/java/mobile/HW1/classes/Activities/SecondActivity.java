@@ -61,10 +61,13 @@ public class SecondActivity extends AppCompatActivity {
     //specific key in order to save json data.
     private String fileName = "Weather";
 
-    private static final int START_GETTING_JSON = 0;
-    private static final int LOCATION_MODE = 1;
-    private static final int RENDER = 2;
-    private static final int CITY_NAME = 3;
+    private static final int SAVE_DATA = -2;
+    private static final int START_GETTING_JSON = -1;
+    private static final int LOCATION_MODE = 0;
+    private static final int RENDER = 1;
+    private static final int CITY_NAME = 2;
+    private static final int LOCATION_MODE_CITY_NAME_NOT_AVAILABLE = 3;
+
 
     TextView cityName;
     Button option;
@@ -78,7 +81,6 @@ public class SecondActivity extends AppCompatActivity {
     ConstraintLayout mainBackground;
     LinearLayout moreDetail;
 
-    // TextView weatherIcon;
     Thread jsonGetterThread;
     ProgressBar progressBar;
 
@@ -113,7 +115,6 @@ public class SecondActivity extends AppCompatActivity {
             mHandlerThread.sendEmptyMessage(RENDER);
         });
 
-
         mHandlerThread.sendEmptyMessage(START_GETTING_JSON);
 
     }
@@ -137,14 +138,7 @@ public class SecondActivity extends AppCompatActivity {
 
         mainBackground = findViewById(R.id.main_background);
 
-        // weatherIcon = findViewById(R.id.weatherIcon);
         progressBar = findViewById(R.id.secondProgressBar);
-
-        // setting weatherFont ...
-        //Typeface weatherFont = ResourcesCompat.getFont(this, R.font.weather);
-        //weatherIcon.setTypeface(weatherFont);
-        //weatherIcon.setText(getString(R.string.weather_clear_night));
-
 
         dayRecyclerView = findViewById(R.id.days);
 
@@ -206,7 +200,7 @@ public class SecondActivity extends AppCompatActivity {
                     } finally {
 
                         if (addresses == null) {
-                            Toasty.error(getApplicationContext(), "CityName is not available:(", Toasty.LENGTH_LONG).show();
+                            mHandlerThread.sendEmptyMessage(LOCATION_MODE_CITY_NAME_NOT_AVAILABLE);
                         } else {
 
                             Message message = new Message();
@@ -268,19 +262,13 @@ public class SecondActivity extends AppCompatActivity {
 
                 cityName.setText(msg.obj.toString());
 
+            } else if (msg.what == LOCATION_MODE_CITY_NAME_NOT_AVAILABLE) {
+                Toasty.error(getApplicationContext(), "CityName is not available:(", Toasty.LENGTH_LONG).show();
+            } else if (msg.what == SAVE_DATA) {
+                ((Thread) msg.obj).start();
             }
 
         }
-
-    }
-
-    private void cityNameAnimation() {
-
-        @SuppressLint("ResourceType") AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(this,
-                R.anim.city_name_anim);
-        set.setTarget(R.id.city_name);
-        set.start();
-
 
     }
 
@@ -375,7 +363,7 @@ public class SecondActivity extends AppCompatActivity {
                 return new JSONObject(data[1]);
 
             } catch (JSONException e) {
-                Toasty.error(getApplicationContext(), "JSON Creation Exception.", Toast.LENGTH_LONG).show();
+                Log.e(TAG, "JSON Creation Exception.");
                 return null;
             }
         }
@@ -398,15 +386,27 @@ public class SecondActivity extends AppCompatActivity {
     public void saveData(JSONObject json) {
 
         Log.v(TAG, "Saving Data");
-        try (FileOutputStream fos = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE)) {
 
-            String storeData = String.valueOf(cityName.getText()).concat("#").concat(json.toString());
-            fos.write(storeData.getBytes());
-            Log.v(TAG, "Data Saved");
+        Thread saveDataThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try (FileOutputStream fos = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE)) {
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                    String storeData = String.valueOf(cityName.getText()).concat("#").concat(json.toString());
+                    fos.write(storeData.getBytes());
+                    Log.v(TAG, "Data Saved");
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Message message = new Message();
+        message.obj = saveDataThread;
+        message.what = SAVE_DATA;
+        mHandlerThread.sendMessage(message);
+
 
     }
 
@@ -556,6 +556,8 @@ public class SecondActivity extends AppCompatActivity {
             Intent i = new Intent(this, MainActivity.class);
             startActivity(i);
         }
+
+        Toasty.warning(getApplicationContext(), "Please Connect to Internet then press Back Button.", Toasty.LENGTH_LONG).show();
 
     }
 
