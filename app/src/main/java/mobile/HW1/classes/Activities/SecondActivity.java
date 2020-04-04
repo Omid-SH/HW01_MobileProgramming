@@ -555,6 +555,7 @@ public class SecondActivity extends AppCompatActivity {
         if (!isDisConnected()) {
             Intent i = new Intent(this, MainActivity.class);
             startActivity(i);
+            return;
         }
 
         Toasty.warning(getApplicationContext(), "Please Connect to Internet then press Back Button.", Toasty.LENGTH_LONG).show();
