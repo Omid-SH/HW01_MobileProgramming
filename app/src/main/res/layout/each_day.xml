@@ -13,20 +13,20 @@
         android:background="@drawable/bg_gradient"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="@dimen/small_medium_padding">
+        android:padding="@dimen/large_padding">
 
         <TextView
             android:id="@+id/day_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textSize="@dimen/small_medium_font"
+            android:textSize="@dimen/medium_large_font"
             android:textStyle="bold"/>
 
         <ImageView
             android:id="@+id/day_icon"
-            android:layout_width="@dimen/size6"
-            android:layout_height="@dimen/size6"
+            android:layout_width="@dimen/size12"
+            android:layout_height="@dimen/size12"
             android:layout_margin="@dimen/medium_large_padding"
             android:src="@drawable/ic_sunny" />
 
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:padding="@dimen/small_padding">
+            android:padding="@dimen/medium_large_padding">
 
             <TextView
                 android:id="@+id/day_min_temperature"
@@ -44,14 +44,14 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:gravity="center"
-                android:textSize="@dimen/small_medium_font"
+                android:textSize="@dimen/medium_large_font"
                 android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/day_min_max_temperature_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/small_medium_padding"
+                android:layout_width="@dimen/size3"
+                android:layout_height="@dimen/size3"
+                android:layout_margin="@dimen/small_padding"
                 android:src="@drawable/ic_compare" />
 
             <TextView
@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:gravity="center"
-                android:textSize="@dimen/small_medium_font"
+                android:textSize="@dimen/medium_large_font"
                 android:textStyle="bold" />
 
         </LinearLayout>

@@ -125,7 +125,6 @@ public class SecondActivity extends AppCompatActivity {
 
         // extracting components.
         cityName = findViewById(R.id.city_name);
-        option = findViewById(R.id.option);
 
         currentDayName = findViewById(R.id.current_day_name);
         currentTemperature = findViewById(R.id.current_temperature);

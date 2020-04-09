@@ -28,20 +28,13 @@
         android:id="@+id/city_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_large_padding"
         android:padding="@dimen/small_padding"
         android:textSize="@dimen/small_font"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/option"
-        android:layout_width="@dimen/size3"
-        android:layout_height="@dimen/size3"
-        android:background="@drawable/ic_option"
-        android:padding="@dimen/small_padding"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/current_day_name"
