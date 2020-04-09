@@ -77,7 +77,6 @@ public class SecondActivity extends AppCompatActivity {
 
 
     TextView cityName;
-    Button option;
 
     TextView currentDayName;
     TextView currentTemperature;
@@ -86,7 +85,6 @@ public class SecondActivity extends AppCompatActivity {
     TextView clickedDayHumidity, clickedDayPrecipitation, clickedDayWind;
 
     ConstraintLayout mainBackground;
-    LinearLayout day;
     LinearLayout moreDetail;
 
     Thread jsonGetterThread;
@@ -147,7 +145,6 @@ public class SecondActivity extends AppCompatActivity {
 
         progressBar = findViewById(id.secondProgressBar);
 
-        day = findViewById(id.day);
         dayRecyclerView = findViewById(id.days);
 
         dayRecyclerView.setHasFixedSize(true);
