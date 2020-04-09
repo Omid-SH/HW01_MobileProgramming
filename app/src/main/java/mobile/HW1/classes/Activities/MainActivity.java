@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     // TAG for debugging.
     private static String TAG = "TAG";
+    private static int requestCancelled = 123;
 
     // button is local defined.
     private EditText editText;
@@ -122,7 +123,8 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(v -> {
 
             if (isDisConnected()) {
-                Toasty.info(v.getContext(), "Switching to Your Last Search", Toasty.LENGTH_LONG, true).show();
+                Toasty.info(v.getContext(), "Switching to Your Last Search",
+                        Toasty.LENGTH_LONG, true).show();
                 noInternetMode();
                 return;
             }
@@ -150,7 +152,8 @@ public class MainActivity extends AppCompatActivity {
             String location = editText.getText().toString();
 
             if (location.equals("")) {
-                Toasty.error(v.getContext(), "Please write sth!", Toast.LENGTH_SHORT, true).show();
+                Toasty.error(v.getContext(), "Please write sth!",
+                        Toast.LENGTH_SHORT, true).show();
                 return;
             }
 
@@ -184,7 +187,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void noInternetMode() {
         dataHolder.invalid();
-        Toasty.warning(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT, true).show();
+        Toasty.warning(getApplicationContext(), "No Internet Connection",
+                Toast.LENGTH_SHORT, true).show();
+
         Intent i = new Intent(this, SecondActivity.class);
         startActivity(i);
     }
@@ -245,7 +250,9 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             if (isDisConnected()) {
-                Toasty.info(getApplicationContext(), "Switching to Your Last Search", Toasty.LENGTH_LONG, true).show();
+                Toasty.info(getApplicationContext(),
+                        "Switching to Your Last Search",
+                        Toasty.LENGTH_LONG, true).show();
                 noInternetMode();
                 return;
             }
@@ -265,8 +272,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void gecode(String name) {
 
-        String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiYWhyZWNjZXNlIiwiYSI6ImNrN28yZjE1ZzA0bnIzZG0zb2kxNzlrcHkifQ.J5-vlsAJMMenyqXyRoq32A";
-
+        String MAPBOX_ACCESS_TOKEN = DataHolder.getMapBoxToken();
         ArrayList<CarmenFeature> cityResults = new ArrayList<>();
 
         MapboxGeocoding mapboxGeocoding = MapboxGeocoding.builder()
@@ -322,7 +328,10 @@ public class MainActivity extends AppCompatActivity {
     private void fetchLastLocation() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    Activity#requestPermissions
                 // here to request the missing permissions, and then overriding
@@ -349,7 +358,8 @@ public class MainActivity extends AppCompatActivity {
                             Intent i = new Intent(getApplicationContext(), SecondActivity.class);
                             startActivity(i);
                         } else {
-                            Toasty.info(getApplicationContext(), "Switching to Your Last Search", Toasty.LENGTH_LONG, true).show();
+                            Toasty.info(getApplicationContext(),
+                                    "Switching to Your Last Search", Toasty.LENGTH_LONG, true).show();
                             noInternetMode();
                         }
 
@@ -362,14 +372,16 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         Log.v(TAG, String.valueOf(requestCode));
-        if (requestCode == 123) {// If request is cancelled, the result arrays are empty.
+        if (requestCode == requestCancelled) {// If request is cancelled, the result arrays are empty.
             if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 // permission was denied, show alert to explain permission
                 Toasty.warning(getApplicationContext(), "Sorry you didn't allow permissions", Toasty.LENGTH_LONG).show();
             } else {
                 //permission is granted now start a background service
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     fetchLastLocation();
                 }
             }
@@ -377,9 +389,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPermissionAlert() {
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 123);
+        if (ActivityCompat.checkSelfPermission(getApplicationContext()
+                , Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getApplicationContext()
+                , Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION}, requestCancelled);
         }
     }
 

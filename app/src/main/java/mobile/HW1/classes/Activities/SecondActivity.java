@@ -248,10 +248,12 @@ public class SecondActivity extends AppCompatActivity {
             } else if (msg.what == RENDER) {
 
                 try {
-                    Log.v(TAG, "Start Rendering " + json.toString());
-                    mAdapter.setDataSet(json.getJSONObject("daily").getJSONArray("data"));
-                    Log.v(TAG, String.valueOf(mAdapter.getDataSet().length()));
-                    mAdapter.notifyDataSetChanged();
+                    if (json != null) {
+                        Log.v(TAG, "Start Rendering " + json.toString());
+                        mAdapter.setDataSet(json.getJSONObject("daily").getJSONArray("data"));
+                        Log.v(TAG, String.valueOf(mAdapter.getDataSet().length()));
+                        mAdapter.notifyDataSetChanged();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -288,7 +290,7 @@ public class SecondActivity extends AppCompatActivity {
         // get json from network.
         try {
 
-            final String DARK_SKY = "https://api.forecast.io/forecast/a6b8c7b90a261e493e22279291026462/%s";
+            final String DARK_SKY = DataHolder.getDarkSkyToken();
             URL url = new URL(String.format((DARK_SKY), coordintate));
 
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -450,7 +452,7 @@ public class SecondActivity extends AppCompatActivity {
             Calendar calendar = Calendar.getInstance();
             int today = calendar.get(Calendar.DAY_OF_WEEK) - 1 + dayOffSet;
 
-            String[] days = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+            String[] days = DataHolder.getDays();
 
             currentDayName.setText(days[today % 7]);
 
@@ -468,51 +470,7 @@ public class SecondActivity extends AppCompatActivity {
 
                 String currentIcon = json.getJSONObject("currently").getString("icon");
                 Log.v(TAG, "MainBack" + currentIcon);
-                switch (currentIcon) {
-
-                    // setting background page according to the icon.
-                    case "snow":
-                    case "sleet":
-                        currentDayName.setTextColor(getResources().getColor(text_color_snowy));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_snowy));
-                        currentSummary.setTextColor(getResources().getColor(text_color_snowy));
-                        moreDetail.setBackgroundResource(more_detail_snowy);
-                        mainBackground.setBackgroundResource(drawable.snowy_background);
-                        break;
-
-                    case "clear-day":
-                    case "clear":
-                        currentDayName.setTextColor(getResources().getColor(text_color_sunny));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_sunny));
-                        currentSummary.setTextColor(getResources().getColor(text_color_sunny));
-                        moreDetail.setBackgroundResource(more_detail_sunny);
-                        mainBackground.setBackgroundResource(drawable.sunny_background);
-                        break;
-
-                    case "clear-night":
-                        currentDayName.setTextColor(getResources().getColor(text_color_night));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_night));
-                        currentSummary.setTextColor(getResources().getColor(text_color_night));
-                        moreDetail.setBackgroundResource(more_detail_night);
-                        mainBackground.setBackgroundResource(drawable.clear_night_background);
-                        break;
-
-                    case "rain":
-                        currentDayName.setTextColor(getResources().getColor(text_color_rainy));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_rainy));
-                        currentSummary.setTextColor(getResources().getColor(text_color_rainy));
-                        moreDetail.setBackgroundResource(more_detail_rainy);
-                        mainBackground.setBackgroundResource(drawable.rainy_background);
-                        break;
-
-                    default:
-                        currentDayName.setTextColor(getResources().getColor(text_color_cloudy));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_cloudy));
-                        currentSummary.setTextColor(getResources().getColor(text_color_cloudy));
-                        moreDetail.setBackgroundResource(more_detail_cloudy);
-                        mainBackground.setBackgroundResource(drawable.cloudy_background);
-                        break;
-                }
+                setIcon(currentIcon);
 
             } else {
 
@@ -533,51 +491,7 @@ public class SecondActivity extends AppCompatActivity {
                 String currentIcon = data.getString("icon");
 
                 Log.v(TAG, "MainBack" + currentIcon);
-                switch (currentIcon) {
-
-                    // setting background page according to the icon.
-                    case "snow":
-                    case "sleet":
-                        currentDayName.setTextColor(getResources().getColor(text_color_snowy));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_snowy));
-                        currentSummary.setTextColor(getResources().getColor(text_color_snowy));
-                        moreDetail.setBackgroundResource(more_detail_snowy);
-                        mainBackground.setBackgroundResource(drawable.snowy_background);
-                        break;
-
-                    case "clear-day":
-                    case "clear":
-                        currentDayName.setTextColor(getResources().getColor(text_color_sunny));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_sunny));
-                        currentSummary.setTextColor(getResources().getColor(text_color_sunny));
-                        moreDetail.setBackgroundResource(more_detail_sunny);
-                        mainBackground.setBackgroundResource(drawable.sunny_background);
-                        break;
-
-                    case "clear-night":
-                        currentDayName.setTextColor(getResources().getColor(text_color_night));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_night));
-                        currentSummary.setTextColor(getResources().getColor(text_color_night));
-                        moreDetail.setBackgroundResource(more_detail_night);
-                        mainBackground.setBackgroundResource(drawable.clear_night_background);
-                        break;
-
-                    case "rain":
-                        currentDayName.setTextColor(getResources().getColor(text_color_rainy));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_rainy));
-                        currentSummary.setTextColor(getResources().getColor(text_color_rainy));
-                        moreDetail.setBackgroundResource(more_detail_rainy);
-                        mainBackground.setBackgroundResource(drawable.rainy_background);
-                        break;
-
-                    default:
-                        currentDayName.setTextColor(getResources().getColor(text_color_cloudy));
-                        currentTemperature.setTextColor(getResources().getColor(text_color_cloudy));
-                        currentSummary.setTextColor(getResources().getColor(text_color_cloudy));
-                        moreDetail.setBackgroundResource(more_detail_cloudy);
-                        mainBackground.setBackgroundResource(drawable.cloudy_background);
-                        break;
-                }
+                setIcon(currentIcon);
 
             }
 
@@ -623,4 +537,51 @@ public class SecondActivity extends AppCompatActivity {
     }
 
 
+    public void setIcon(String currentIcon) {
+        switch (currentIcon) {
+
+            // setting background page according to the icon.
+            case "snow":
+            case "sleet":
+                currentDayName.setTextColor(getResources().getColor(text_color_snowy));
+                currentTemperature.setTextColor(getResources().getColor(text_color_snowy));
+                currentSummary.setTextColor(getResources().getColor(text_color_snowy));
+                moreDetail.setBackgroundResource(more_detail_snowy);
+                mainBackground.setBackgroundResource(drawable.snowy_background);
+                break;
+
+            case "clear-day":
+            case "clear":
+                currentDayName.setTextColor(getResources().getColor(text_color_sunny));
+                currentTemperature.setTextColor(getResources().getColor(text_color_sunny));
+                currentSummary.setTextColor(getResources().getColor(text_color_sunny));
+                moreDetail.setBackgroundResource(more_detail_sunny);
+                mainBackground.setBackgroundResource(drawable.sunny_background);
+                break;
+
+            case "clear-night":
+                currentDayName.setTextColor(getResources().getColor(text_color_night));
+                currentTemperature.setTextColor(getResources().getColor(text_color_night));
+                currentSummary.setTextColor(getResources().getColor(text_color_night));
+                moreDetail.setBackgroundResource(more_detail_night);
+                mainBackground.setBackgroundResource(drawable.clear_night_background);
+                break;
+
+            case "rain":
+                currentDayName.setTextColor(getResources().getColor(text_color_rainy));
+                currentTemperature.setTextColor(getResources().getColor(text_color_rainy));
+                currentSummary.setTextColor(getResources().getColor(text_color_rainy));
+                moreDetail.setBackgroundResource(more_detail_rainy);
+                mainBackground.setBackgroundResource(drawable.rainy_background);
+                break;
+
+            default:
+                currentDayName.setTextColor(getResources().getColor(text_color_cloudy));
+                currentTemperature.setTextColor(getResources().getColor(text_color_cloudy));
+                currentSummary.setTextColor(getResources().getColor(text_color_cloudy));
+                moreDetail.setBackgroundResource(more_detail_cloudy);
+                mainBackground.setBackgroundResource(drawable.cloudy_background);
+                break;
+        }
+    }
 }
