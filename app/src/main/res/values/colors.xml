@@ -11,5 +11,8 @@
     <color name="brilliantLavender">#FFCCFF</color>
     <color name="frenchBlue">#0077B3</color>
 
+    <color name="text_color_rainy"></color>
+    <color name="more_detail_rainy"></color>
+    <color name="each_day_rainy"></color>
 </resources>
 

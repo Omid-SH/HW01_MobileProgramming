@@ -79,6 +79,7 @@ public class SecondActivity extends AppCompatActivity {
     TextView clickedDayHumidity, clickedDayPrecipitation, clickedDayWind;
 
     ConstraintLayout mainBackground;
+    LinearLayout day;
     LinearLayout moreDetail;
 
     Thread jsonGetterThread;
@@ -140,6 +141,7 @@ public class SecondActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.secondProgressBar);
 
+        day = findViewById(R.id.day);
         dayRecyclerView = findViewById(R.id.days);
 
         dayRecyclerView.setHasFixedSize(true);
@@ -513,11 +515,19 @@ public class SecondActivity extends AppCompatActivity {
                     case "snow":
                     case "sleet":
                         mainBackground.setBackgroundResource(R.drawable.snowy_background);
+                        //currentDayName.setTextColor();
+                        //currentTemperature.setTextColor();
+                        //currentSummary.setTextColor();
+                        //day.setBackgroundResource(R.drawable.snowy_background);
+                        //moreDetail.setBackgroundResource();
+                        //mAdapter.notifyDataSetChanged();
                         break;
 
                     case "clear-day":
                     case "clear":
                         mainBackground.setBackgroundResource(R.drawable.sunny_background);
+                        //day.setBackgroundResource(R.drawable.bg_gradient);
+                        //mAdapter.notifyDataSetChanged();
                         break;
 
                     case "clear-night":
