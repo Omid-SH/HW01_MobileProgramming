@@ -47,7 +47,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintVertical_bias="0.2"
+        android:textColor="@color/celeste" />
 
     <TextView
         android:id="@+id/current_temperature"
@@ -59,7 +60,8 @@
         app:layout_constraintBottom_toTopOf="@id/current_summary"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_day_name" />
+        app:layout_constraintTop_toBottomOf="@id/current_day_name"
+        android:textColor="@color/celeste" />
 
     <TextView
         android:id="@+id/current_summary"
@@ -69,7 +71,8 @@
         android:visibility="invisible"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_temperature" />
+        app:layout_constraintTop_toBottomOf="@id/current_temperature"
+        android:textColor="@color/celeste" />
 
 
     <androidx.recyclerview.widget.RecyclerView

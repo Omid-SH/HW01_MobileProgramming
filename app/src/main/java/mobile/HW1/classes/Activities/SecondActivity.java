@@ -54,6 +54,13 @@ import mobile.HW1.R;
 import mobile.HW1.classes.Adapters.DayAdapter;
 import mobile.HW1.classes.Utils.DataHolder;
 
+import static mobile.HW1.R.*;
+import static mobile.HW1.R.color.*;
+import static mobile.HW1.R.color.text_color_cloudy;
+import static mobile.HW1.R.color.text_color_night;
+import static mobile.HW1.R.color.text_color_rainy;
+
+
 public class SecondActivity extends AppCompatActivity {
 
     static String TAG = "TAG";
@@ -101,7 +108,7 @@ public class SecondActivity extends AppCompatActivity {
         Log.v(TAG, "Start Creation");
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.second_page);
+        setContentView(layout.second_page);
 
         setUpViewComponents();
 
@@ -124,24 +131,24 @@ public class SecondActivity extends AppCompatActivity {
 
 
         // extracting components.
-        cityName = findViewById(R.id.city_name);
+        cityName = findViewById(id.city_name);
 
-        currentDayName = findViewById(R.id.current_day_name);
-        currentTemperature = findViewById(R.id.current_temperature);
-        currentSummary = findViewById(R.id.current_summary);
+        currentDayName = findViewById(id.current_day_name);
+        currentTemperature = findViewById(id.current_temperature);
+        currentSummary = findViewById(id.current_summary);
 
         // bottom bar ...
-        moreDetail = findViewById(R.id.more_detail);
-        clickedDayWind = findViewById(R.id.clicked_day_wind);
-        clickedDayPrecipitation = findViewById(R.id.clicked_day_precipitation);
-        clickedDayHumidity = findViewById(R.id.clicked_day_humidity);
+        moreDetail = findViewById(id.more_detail);
+        clickedDayWind = findViewById(id.clicked_day_wind);
+        clickedDayPrecipitation = findViewById(id.clicked_day_precipitation);
+        clickedDayHumidity = findViewById(id.clicked_day_humidity);
 
-        mainBackground = findViewById(R.id.main_background);
+        mainBackground = findViewById(id.main_background);
 
-        progressBar = findViewById(R.id.secondProgressBar);
+        progressBar = findViewById(id.secondProgressBar);
 
-        day = findViewById(R.id.day);
-        dayRecyclerView = findViewById(R.id.days);
+        day = findViewById(id.day);
+        dayRecyclerView = findViewById(id.days);
 
         dayRecyclerView.setHasFixedSize(true);
 
@@ -422,6 +429,7 @@ public class SecondActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ResourceAsColor")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void renderWeather(int dayOffSet) {
 
@@ -468,24 +476,44 @@ public class SecondActivity extends AppCompatActivity {
                     // setting background page according to the icon.
                     case "snow":
                     case "sleet":
-                        mainBackground.setBackgroundResource(R.drawable.snowy_background);
+                        currentDayName.setTextColor(getResources().getColor(text_color_snowy));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_snowy));
+                        currentSummary.setTextColor(getResources().getColor(text_color_snowy));
+                        moreDetail.setBackgroundResource(more_detail_snowy);
+                        mainBackground.setBackgroundResource(drawable.snowy_background);
                         break;
 
                     case "clear-day":
                     case "clear":
-                        mainBackground.setBackgroundResource(R.drawable.sunny_background);
+                        currentDayName.setTextColor(getResources().getColor(text_color_sunny));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_sunny));
+                        currentSummary.setTextColor(getResources().getColor(text_color_sunny));
+                        moreDetail.setBackgroundResource(more_detail_sunny);
+                        mainBackground.setBackgroundResource(drawable.sunny_background);
                         break;
 
                     case "clear-night":
-                        mainBackground.setBackgroundResource(R.drawable.clear_night_background);
+                        currentDayName.setTextColor(getResources().getColor(text_color_night));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_night));
+                        currentSummary.setTextColor(getResources().getColor(text_color_night));
+                        moreDetail.setBackgroundResource(more_detail_night);
+                        mainBackground.setBackgroundResource(drawable.clear_night_background);
                         break;
 
                     case "rain":
-                        mainBackground.setBackgroundResource(R.drawable.rainy_background);
+                        currentDayName.setTextColor(getResources().getColor(text_color_rainy));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_rainy));
+                        currentSummary.setTextColor(getResources().getColor(text_color_rainy));
+                        moreDetail.setBackgroundResource(more_detail_rainy);
+                        mainBackground.setBackgroundResource(drawable.rainy_background);
                         break;
 
                     default:
-                        mainBackground.setBackgroundResource(R.drawable.cloudy_background);
+                        currentDayName.setTextColor(getResources().getColor(text_color_cloudy));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_cloudy));
+                        currentSummary.setTextColor(getResources().getColor(text_color_cloudy));
+                        moreDetail.setBackgroundResource(more_detail_cloudy);
+                        mainBackground.setBackgroundResource(drawable.cloudy_background);
                         break;
                 }
 
@@ -513,32 +541,44 @@ public class SecondActivity extends AppCompatActivity {
                     // setting background page according to the icon.
                     case "snow":
                     case "sleet":
-                        mainBackground.setBackgroundResource(R.drawable.snowy_background);
-                        //currentDayName.setTextColor();
-                        //currentTemperature.setTextColor();
-                        //currentSummary.setTextColor();
-                        //day.setBackgroundResource(R.drawable.snowy_background);
-                        //moreDetail.setBackgroundResource();
-                        //mAdapter.notifyDataSetChanged();
+                        currentDayName.setTextColor(getResources().getColor(text_color_snowy));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_snowy));
+                        currentSummary.setTextColor(getResources().getColor(text_color_snowy));
+                        moreDetail.setBackgroundResource(more_detail_snowy);
+                        mainBackground.setBackgroundResource(drawable.snowy_background);
                         break;
 
                     case "clear-day":
                     case "clear":
-                        mainBackground.setBackgroundResource(R.drawable.sunny_background);
-                        //day.setBackgroundResource(R.drawable.bg_gradient);
-                        //mAdapter.notifyDataSetChanged();
+                        currentDayName.setTextColor(getResources().getColor(text_color_sunny));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_sunny));
+                        currentSummary.setTextColor(getResources().getColor(text_color_sunny));
+                        moreDetail.setBackgroundResource(more_detail_sunny);
+                        mainBackground.setBackgroundResource(drawable.sunny_background);
                         break;
 
                     case "clear-night":
-                        mainBackground.setBackgroundResource(R.drawable.clear_night_background);
+                        currentDayName.setTextColor(getResources().getColor(text_color_night));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_night));
+                        currentSummary.setTextColor(getResources().getColor(text_color_night));
+                        moreDetail.setBackgroundResource(more_detail_night);
+                        mainBackground.setBackgroundResource(drawable.clear_night_background);
                         break;
 
                     case "rain":
-                        mainBackground.setBackgroundResource(R.drawable.rainy_background);
+                        currentDayName.setTextColor(getResources().getColor(text_color_rainy));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_rainy));
+                        currentSummary.setTextColor(getResources().getColor(text_color_rainy));
+                        moreDetail.setBackgroundResource(more_detail_rainy);
+                        mainBackground.setBackgroundResource(drawable.rainy_background);
                         break;
 
                     default:
-                        mainBackground.setBackgroundResource(R.drawable.cloudy_background);
+                        currentDayName.setTextColor(getResources().getColor(text_color_cloudy));
+                        currentTemperature.setTextColor(getResources().getColor(text_color_cloudy));
+                        currentSummary.setTextColor(getResources().getColor(text_color_cloudy));
+                        moreDetail.setBackgroundResource(more_detail_cloudy);
+                        mainBackground.setBackgroundResource(drawable.cloudy_background);
                         break;
                 }
 

@@ -11,8 +11,23 @@
     <color name="brilliantLavender">#FFCCFF</color>
     <color name="frenchBlue">#0077B3</color>
 
-    <color name="text_color_rainy"></color>
-    <color name="more_detail_rainy"></color>
-    <color name="each_day_rainy"></color>
+    <color name="each_day_up">#00BFE6</color>
+    <color name="each_day_down">#00BFE6</color>
+
+    <color name="text_color_sunny">#00BFE6</color>
+    <color name="more_detail_sunny">#00BFE6</color>
+
+    <color name="text_color_rainy">#000080</color>
+    <color name="more_detail_rainy">#000080</color>
+
+    <color name="text_color_night">#99FFFF</color>
+    <color name="more_detail_night">#002B80</color>
+
+    <color name="text_color_cloudy">#0022CC</color>
+    <color name="more_detail_cloudy">#0022CC</color>
+
+    <color name="text_color_snowy">#3333FF</color>
+    <color name="more_detail_snowy">#3333FF</color>
+
 </resources>
 
