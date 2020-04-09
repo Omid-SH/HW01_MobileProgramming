@@ -11,4 +11,9 @@
     <string name="done">Done</string>
     <string name="location">Location</string>
     <string name="wind_speed">miles/sec</string>
+    <string name="tehran">tehran</string>
+    <string name="hello">hello</string>
+    <string name="wind">Wind</string>
+    <string name="precipitation">Precipitation</string>
+    <string name="humidity">Humidity</string>
 </resources>

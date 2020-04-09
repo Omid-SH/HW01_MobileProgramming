@@ -40,6 +40,7 @@
         android:id="@+id/current_day_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/celeste"
         android:textSize="@dimen/medium_large_font"
         android:textStyle="bold"
         android:visibility="invisible"
@@ -47,34 +48,33 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2"
-        android:textColor="@color/celeste" />
+        app:layout_constraintVertical_bias="0.2" />
 
     <TextView
         android:id="@+id/current_temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/celeste"
         android:textSize="@dimen/XXXXlarge_font"
         android:textStyle="bold"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/current_summary"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_day_name"
-        android:textColor="@color/celeste" />
+        app:layout_constraintTop_toBottomOf="@id/current_day_name" />
 
     <TextView
         android:id="@+id/current_summary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/small_medium_font"
-        android:visibility="invisible"
         android:gravity="center"
         android:padding="@dimen/medium_large_padding"
+        android:textColor="@color/celeste"
+        android:textSize="@dimen/small_medium_font"
+        android:visibility="invisible"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_temperature"
-        android:textColor="@color/celeste" />
+        app:layout_constraintTop_toBottomOf="@id/current_temperature" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -101,6 +101,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:background="@color/darkPowderBlue"
         android:orientation="horizontal"
         android:paddingStart="5dp"
         android:paddingLeft="5dp"
@@ -109,8 +110,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:background="@color/darkPowderBlue">
+        app:layout_constraintRight_toRightOf="parent">
 
 
         <LinearLayout
@@ -137,11 +137,11 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:text="Wind"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:gravity="center"
+                android:text="@string/wind"
                 android:textColor="@color/celeste"
                 android:textSize="@dimen/medium_large_font"
                 android:textStyle="bold" />
@@ -173,11 +173,11 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:text="Precipitation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:gravity="center"
+                android:text="@string/precipitation"
                 android:textColor="@color/celeste"
                 android:textSize="@dimen/medium_large_font"
                 android:textStyle="bold" />
@@ -207,11 +207,11 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:text="Humidity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:gravity="center"
+                android:text="@string/humidity"
                 android:textColor="@color/celeste"
                 android:textSize="@dimen/medium_large_font"
                 android:textStyle="bold" />
